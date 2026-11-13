@@ -44,28 +44,80 @@ public final class SwordArcRenderer {
             Vec3 v=up.scale(Math.cos(tilt)).subtract(right.scale(Math.sin(tilt)));
             Vec3 center=new Vec3(a.x(),a.y(),a.z()).add(forward.scale(a.speed()*age)).subtract(camera);
             float fade=(float)Math.sin(Math.PI*Math.min(0.99,Math.max(0.01,progress)));
-            for(int trail=2;trail>=0;trail--) {
-                Vec3 origin=center.subtract(forward.scale(trail*0.28*a.scale())).subtract(v.scale(trail*0.10*a.scale()));
-                float alpha=fade*(trail==0?1F:0.15F/trail);
-                ribbon(vertices,matrix,origin,u,v,3F*a.scale(),0.5F*a.scale(),alpha*0.12F,1F,0.52F,0.015F);
-                ribbon(vertices,matrix,origin,u,v,3F*a.scale(),0.23F*a.scale(),alpha*0.7F,1F,0.78F,0.12F);
-                ribbon(vertices,matrix,origin,u,v,3F*a.scale(),0.055F*a.scale(),alpha,1F,0.99F,0.83F);
+            // Five trailing volumes twist behind the real beveled blade.
+            for(int trail=5;trail>=1;trail--) {
+                double twist=tilt-trail*0.035;
+                Vec3 tu=right.scale(Math.cos(twist)).add(up.scale(Math.sin(twist)));
+                Vec3 tv=up.scale(Math.cos(twist)).subtract(right.scale(Math.sin(twist)));
+                Vec3 origin=center.subtract(forward.scale(trail*0.22*a.scale()))
+                    .subtract(v.scale(trail*0.06*a.scale()));
+                volume(vertices,matrix,origin,tu,tv,forward,3F*a.scale(),
+                    0.30F*a.scale(),0.11F*a.scale(),fade*0.13F/trail,1F,0.58F,0.04F,48,4);
+            }
+            // Broad gold aura, solid gold body, and a raised ivory cutting ridge.
+            volume(vertices,matrix,center,u,v,forward,3F*a.scale(),
+                0.52F*a.scale(),0.24F*a.scale(),fade*0.14F,1F,0.53F,0.01F,96,8);
+            volume(vertices,matrix,center,u,v,forward,3F*a.scale(),
+                0.25F*a.scale(),0.10F*a.scale(),fade*0.90F,1F,0.80F,0.20F,96,8);
+            Vec3 ridge=center.add(v.scale(0.13*a.scale())).add(forward.scale(0.065*a.scale()));
+            volume(vertices,matrix,ridge,u,v,forward,3F*a.scale(),
+                0.065F*a.scale(),0.035F*a.scale(),fade,1F,0.99F,0.87F,96,8);
+            // A smaller, offset crescent follows the main blade in three dimensions.
+            volume(vertices,matrix,center.subtract(v.scale(0.8*a.scale())).subtract(forward.scale(0.3*a.scale())),
+                u,v,forward,2.3F*a.scale(),0.12F*a.scale(),0.06F*a.scale(),
+                fade*0.6F,1F,0.85F,0.35F,64,8);
+            for(int spark=0;spark<12;spark++) {
+                double t=(spark/12.0+age*0.018)%1.0;
+                double x=(2*t-1)*3*a.scale();
+                double y=1.26*a.scale()*(1-Math.pow(2*t-1,2));
+                double depth=Math.sin(age*0.35+spark*2.4)*0.45*a.scale();
+                Vec3 point=center.add(u.scale(x)).add(v.scale(y+0.3*Math.sin(spark)))
+                    .add(forward.scale(depth));
+                crystal(vertices,matrix,point,u,v,forward,0.035F*a.scale(),fade*0.85F);
             }
         }
         buffers.endBatch(RenderType.lightning());
     }
-    private static void ribbon(VertexConsumer out,Matrix4f m,Vec3 c,Vec3 u,Vec3 v,
-                               float length,float width,float alpha,float r,float g,float b) {
-        for(int i=0;i<48;i++){
-            double t=i/48.0,t2=(i+1)/48.0;
-            double x=(2*t-1)*length,x2=(2*t2-1)*length;
-            double curve=0.42*length*(1-Math.pow(2*t-1,2));
-            double curve2=0.42*length*(1-Math.pow(2*t2-1,2));
-            double w=width*Math.pow(Math.sin(t*Math.PI),0.7),w2=width*Math.pow(Math.sin(t2*Math.PI),0.7);
-            vertex(out,m,c.add(u.scale(x)).add(v.scale(curve+w)),r,g,b,alpha);
-            vertex(out,m,c.add(u.scale(x2)).add(v.scale(curve2+w2)),r,g,b,alpha);
-            vertex(out,m,c.add(u.scale(x2)).add(v.scale(curve2-w2)),r,g,b,alpha);
-            vertex(out,m,c.add(u.scale(x)).add(v.scale(curve-w)),r,g,b,alpha);
+    /** An elliptical eight-facet section swept along a curved, tapering blade.
+     *  Unlike a billboard ribbon, it has front, back and bevel faces from every view. */
+    private static void volume(VertexConsumer out,Matrix4f m,Vec3 c,Vec3 u,Vec3 v,Vec3 normal,
+                               float length,float width,float depth,float alpha,float r,float g,float b,
+                               int segments,int sides) {
+        for(int i=0;i<segments;i++){
+            double t=i/(double)segments,t2=(i+1)/(double)segments;
+            Vec3 a=arc(c,u,v,length,t),a2=arc(c,u,v,length,t2);
+            double taper=Math.pow(Math.max(0.0001,Math.sin(t*Math.PI)),0.8);
+            double taper2=Math.pow(Math.max(0.0001,Math.sin(t2*Math.PI)),0.8);
+            for(int j=0;j<sides;j++){
+                double angle=j*Math.PI*2/sides,angle2=(j+1)*Math.PI*2/sides;
+                Vec3 p=section(a,v,normal,width,depth,taper,angle);
+                Vec3 q=section(a2,v,normal,width,depth,taper2,angle);
+                Vec3 rr=section(a2,v,normal,width,depth,taper2,angle2);
+                Vec3 ss=section(a,v,normal,width,depth,taper,angle2);
+                float shade=(float)(0.72+0.28*Math.max(0,Math.sin(angle+0.5)));
+                vertex(out,m,p,r*shade,g*shade,b*shade,alpha);
+                vertex(out,m,q,r*shade,g*shade,b*shade,alpha);
+                vertex(out,m,rr,r*shade,g*shade,b*shade,alpha);
+                vertex(out,m,ss,r*shade,g*shade,b*shade,alpha);
+            }
+        }
+    }
+    private static Vec3 arc(Vec3 c,Vec3 u,Vec3 v,float length,double t){
+        double x=(2*t-1)*length;
+        double y=0.42*length*(1-Math.pow(2*t-1,2));
+        return c.add(u.scale(x)).add(v.scale(y));
+    }
+    private static Vec3 section(Vec3 c,Vec3 v,Vec3 normal,float width,float depth,double taper,double angle){
+        return c.add(v.scale(width*taper*Math.cos(angle)))
+            .add(normal.scale(depth*taper*Math.sin(angle)));
+    }
+    private static void crystal(VertexConsumer out,Matrix4f m,Vec3 c,Vec3 u,Vec3 v,Vec3 n,float size,float alpha) {
+        Vec3 top=c.add(v.scale(size*2.5)),bottom=c.subtract(v.scale(size*2.5));
+        Vec3[] ring={c.add(u.scale(size)),c.add(n.scale(size)),c.subtract(u.scale(size)),c.subtract(n.scale(size))};
+        for(int i=0;i<4;i++){
+            Vec3 a=ring[i],b=ring[(i+1)%4];
+            vertex(out,m,top,1,1,0.85F,alpha);vertex(out,m,a,1,0.85F,0.3F,alpha);
+            vertex(out,m,bottom,1,0.65F,0.08F,alpha);vertex(out,m,b,1,0.85F,0.3F,alpha);
         }
     }
     private static void vertex(VertexConsumer out,Matrix4f matrix,Vec3 p,float r,float g,float b,float a){
