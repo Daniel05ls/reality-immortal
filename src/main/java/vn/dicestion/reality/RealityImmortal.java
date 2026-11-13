@@ -2,9 +2,9 @@ package vn.dicestion.reality;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -169,7 +169,9 @@ public final class RealityImmortal {
             if (context.getArgument("maxCount", Integer.class) == 0) return false;
         } catch (IllegalArgumentException ignored) {
         }
-        ItemPredicate filter = null;
+        // getItemPredicate returns a Result, which is a Predicate<ItemStack>,
+        // not an ItemPredicate.
+        Predicate<ItemStack> filter = null;
         try {
             filter = ItemPredicateArgument.getItemPredicate(context, "item");
         } catch (IllegalArgumentException ignored) {
@@ -187,7 +189,7 @@ public final class RealityImmortal {
         return false;
     }
 
-    private static boolean matchesGear(ItemStack stack, ItemPredicate filter) {
+    private static boolean matchesGear(ItemStack stack, Predicate<ItemStack> filter) {
         return !stack.isEmpty() && isRealityGear(stack) && (filter == null || filter.test(stack));
     }
 
