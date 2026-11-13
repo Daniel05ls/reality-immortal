@@ -41,6 +41,7 @@ public final class CrescentSlash {
         List<Slash> slashes = ACTIVE.computeIfAbsent(level, k -> new ArrayList<>());
         if (slashes.size() >= MAX_ACTIVE) slashes.remove(0);
         slashes.add(new Slash(player, start, start, dir));
+        SwordArc.emit(level,start,dir,SCALE,(float)SPEED,25);
         level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP,
             SoundSource.PLAYERS, 0.4F, 1.2F);
     }
@@ -57,11 +58,11 @@ public final class CrescentSlash {
             // Smash every block the blade passes through, dropping the blocks.
             RealityCombat.shatterBlocks(level, s.pos(), pos, s.dir(), SCALE);
             // The blade itself, facing along its travel direction.
-            RealityCombat.swordQi(level, pos, s.dir(), SCALE);
+            // The client renders one continuous traveling ribbon per launch.
             // A golden glowing wake behind the blade.
             Vec3 behind = pos.add(s.dir().scale(-0.8));
-            level.sendParticles(GOLD, behind.x, behind.y, behind.z, 2, 0.15, 0.15, 0.15, 0);
-            level.sendParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.1, 0.1, 0.1, 0.01);
+
+
             // Cut everything the blade passes through. The check radius matches
             // the X's reach (its stroke tips are 3 blocks from the center,
             // scaled up for the wide blade) and is wider than one tick of

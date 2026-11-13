@@ -57,6 +57,16 @@ public final class RealityImmortal {
     public static final DeferredItem<ArmorItem> CHEST = armor("immortal_chestplate", ArmorItem.Type.CHESTPLATE);
     public static final DeferredItem<ArmorItem> LEGS = armor("immortal_leggings", ArmorItem.Type.LEGGINGS);
     public static final DeferredItem<ArmorItem> BOOTS = armor("immortal_boots", ArmorItem.Type.BOOTS);
+    public static final DeferredItem<Item> FRAGMENT=ITEMS.register("reality_fragment",()->
+        new Item(new Item.Properties().fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredRegister.Blocks BLOCKS=DeferredRegister.createBlocks(ID);
+    public static final net.neoforged.neoforge.registries.DeferredBlock<net.minecraft.world.level.block.Block> DIVINITY_ORE=
+        BLOCKS.register("divinity_ore",()->new net.minecraft.world.level.block.Block(
+            net.minecraft.world.level.block.state.BlockBehaviour.Properties.of()
+                .mapColor(net.minecraft.world.level.material.MapColor.COLOR_YELLOW)
+                .strength(6F,1200F).requiresCorrectToolForDrops().lightLevel(s->5)));
+    public static final DeferredItem<BlockItem> DIVINITY_ORE_ITEM=ITEMS.register("divinity_ore",()->
+        new BlockItem(DIVINITY_ORE.get(),new Item.Properties().fireResistant().rarity(Rarity.RARE)));
     // +60 max health: three extra health bars (30 hearts) while the full
     // Immortal set is worn.
     private static final ResourceLocation EXTRA_HEALTH_ID = ResourceLocation.fromNamespaceAndPath(ID, "immortal_health");
@@ -68,10 +78,13 @@ public final class RealityImmortal {
             .displayItems((params, out) -> {
                 out.accept(SWORD.get()); out.accept(HELMET.get()); out.accept(CHEST.get());
                 out.accept(LEGS.get()); out.accept(BOOTS.get());
+                out.accept(FRAGMENT.get()); out.accept(DIVINITY_ORE_ITEM.get());
             }).build());
     public RealityImmortal(IEventBus bus) {
         MATERIALS.register(bus);
+        BLOCKS.register(bus);
         ITEMS.register(bus);
+        bus.addListener(SwordArc::register);
         bus.addListener(WingBoost::register);
         NeoForge.EVENT_BUS.addListener(AngelFlight::swap);
         TABS.register(bus);

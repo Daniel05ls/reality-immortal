@@ -126,32 +126,8 @@ public final class RealityCombat {
     private static final DustParticleOptions ICE_CORE = new DustParticleOptions(new Vector3f(1F,0.98F,0.82F),0.46F);
     private static final DustParticleOptions BLUE_TRAIL = new DustParticleOptions(new Vector3f(0.85F,0.38F,0.025F),0.9F);
 
-    public static void swordQi(ServerLevel level, Vec3 center, Vec3 look, double scale) {
-        Basis basis=bladeBasis(look);
-        Vec3 diagonal=basis.u().scale(0.8660254).subtract(basis.v().scale(0.5));
-        Vec3 normal=basis.u().scale(0.5).add(basis.v().scale(0.8660254));
-        Vec3 forward=look.normalize();
-        ribbon(level,center,diagonal,normal,forward,3.0*scale,1.3*scale,scale,28);
-        ribbon(level,center.subtract(normal.scale(0.8*scale)).subtract(forward.scale(0.25)),
-            diagonal,normal,forward,2.34*scale,0.9*scale,scale*0.7,20);
-    }
-
-    private static void ribbon(ServerLevel level,Vec3 center,Vec3 axis,Vec3 normal,Vec3 forward,
-                               double halfLength,double bulge,double scale,int segments) {
-        for(int i=0;i<=segments;i++) {
-            double t=2.0*i/segments-1.0;
-            double taper=Math.pow(Math.max(0,1-t*t),0.75);
-            Vec3 edge=center.add(axis.scale(t*halfLength)).add(normal.scale(bulge*(1-t*t)));
-            // Narrow white cutting edge; thicker cyan body tapers to two sharp tips.
-            level.sendParticles(ICE_CORE,edge.x,edge.y,edge.z,1,0,0,0,0);
-            if(taper<0.08) continue;
-            Vec3 body=edge.subtract(normal.scale(0.18*scale*taper));
-            level.sendParticles(CYAN_EDGE,body.x,body.y,body.z,1,0,0,0,0);
-            if(i%2==0) {
-                Vec3 wake=edge.subtract(normal.scale(0.5*scale*taper)).subtract(forward.scale(0.45*scale));
-                level.sendParticles(BLUE_TRAIL,wake.x,wake.y,wake.z,1,0.02,0.02,0.02,0);
-            }
-        }
+    public static void swordQi(ServerLevel level,Vec3 center,Vec3 look,double scale) {
+        SwordArc.emit(level,center,look,scale,0F,9);
     }
 
     /** The in-plane axes of the sword-qi blade for a given facing direction. */

@@ -9,5 +9,8 @@
   "tooltip.realityimmortal.enchantable": "Có thể phù phép tại bàn phù phép và đe",
   "tooltip.realityimmortal.armor": "Mặc đủ 4 món: Kích hoạt bảo hộ bất tử",
   "death.attack.reality_cut": "%1$s bị %2$s chém khỏi thực tại",
-  "tooltip.realityimmortal.flight": "Shift + F đổi chế độ • Giữ Ctrl tăng tốc Elytra • Không cần pháo hoa"
+  "tooltip.realityimmortal.flight": "Shift + F đổi chế độ • Giữ Ctrl tăng tốc Elytra • Không cần pháo hoa",
+  "item.realityimmortal.reality_fragment": "Mảnh Vỡ Thực Tại",
+  "block.realityimmortal.divinity_ore": "Quặng Thần Tính",
+  "item.realityimmortal.divinity_ore": "Quặng Thần Tính"
 }
