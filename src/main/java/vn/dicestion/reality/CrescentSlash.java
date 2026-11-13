@@ -1,10 +1,8 @@
 package vn.dicestion.reality;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,26 +19,22 @@ import org.joml.Vector3f;
 
 /**
  * A flying sword-qi blade launched by every swing of the Reality Sword.
- * It travels straight ahead, passes through blocks, cuts everything it
- * touches, and leaves a golden glowing wake behind it. Server-side only.
+ * It travels straight ahead, smashes through blocks (dropping them as
+ * items), cuts everything it touches, and leaves a golden glowing wake
+ * behind it. There is no cooldown: every swing launches a new blade.
+ * Server-side only.
  */
 public final class CrescentSlash {
     private static final double SPEED = 2.0;      // blocks per tick
     private static final double RANGE = 36;       // blocks
-    private static final int COOLDOWN_TICKS = 2;  // 0.1s
     private static final int MAX_ACTIVE = 32;
     private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(1F, 0.79F, 0.24F), 1.0F);
     private static final Map<ServerLevel, List<Slash>> ACTIVE = new WeakHashMap<>();
-    private static final Map<UUID, Long> LAST_SLASH = new HashMap<>();
     private record Slash(ServerPlayer player, Vec3 start, Vec3 pos, Vec3 dir) {}
     private CrescentSlash() {}
 
     public static void tryLaunch(ServerLevel level, ServerPlayer player) {
         if (player.isSpectator()) return;
-        long now = level.getGameTime();
-        Long last = LAST_SLASH.get(player.getUUID());
-        if (last != null && now - last < COOLDOWN_TICKS) return;
-        LAST_SLASH.put(player.getUUID(), now);
         Vec3 dir = player.getLookAngle().normalize();
         Vec3 start = player.getEyePosition().add(dir.scale(1.5));
         List<Slash> slashes = ACTIVE.computeIfAbsent(level, k -> new ArrayList<>());
@@ -58,6 +52,8 @@ public final class CrescentSlash {
         for (Slash s : slashes) {
             if (s.player().isRemoved()) continue;
             Vec3 pos = s.pos().add(s.dir().scale(SPEED));
+            // Smash every block the blade passes through, dropping the blocks.
+            RealityCombat.shatterBlocks(level, s.pos(), pos, s.dir());
             // The blade itself, facing along its travel direction.
             RealityCombat.swordQi(level, pos, s.dir());
             // A golden glowing wake behind the blade.
@@ -81,6 +77,5 @@ public final class CrescentSlash {
 
     public static void stop(ServerStoppedEvent event) {
         ACTIVE.clear();
-        LAST_SLASH.clear();
     }
 }
