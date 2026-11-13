@@ -72,6 +72,7 @@ public final class RealityImmortal {
     public RealityImmortal(IEventBus bus) {
         MATERIALS.register(bus);
         ITEMS.register(bus);
+        bus.addListener(WingBoost::register);
         NeoForge.EVENT_BUS.addListener(AngelFlight::swap);
         TABS.register(bus);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
@@ -234,6 +235,7 @@ public final class RealityImmortal {
     private static void tick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer p)) return;
         AngelFlight.tick(p);
+        WingBoost.tick(p);
         if (!p.isAlive()) return;
         AttributeInstance health = p.getAttribute(Attributes.MAX_HEALTH);
         if (!fullSet(p)) {
