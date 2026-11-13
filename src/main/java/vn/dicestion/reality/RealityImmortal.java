@@ -257,17 +257,20 @@ public final class RealityImmortal {
                 if (!effect.getEffect().value().isBeneficial()) p.removeEffect(effect.getEffect());
             }
             // Full-set blessings, refreshed every second so they never run
-            // out while the set is worn.
-            bless(p, MobEffects.REGENERATION, 1);
+            // out while the set is worn. Everything is at max level:
+            // amplifier 255 (level 256) for the scaling effects. Resistance
+            // caps at level V (100% reduction), and Fire Resistance, Water
+            // Breathing and Night Vision have no levels, so they stay at 0.
+            bless(p, MobEffects.REGENERATION, 255);
             bless(p, MobEffects.FIRE_RESISTANCE, 0);
-            bless(p, MobEffects.DAMAGE_BOOST, 1);
-            bless(p, MobEffects.DAMAGE_RESISTANCE, 1);
+            bless(p, MobEffects.DAMAGE_BOOST, 255);
+            bless(p, MobEffects.DAMAGE_RESISTANCE, 4);
             bless(p, MobEffects.WATER_BREATHING, 0);
             bless(p, MobEffects.NIGHT_VISION, 0);
-            bless(p, MobEffects.LUCK, 1);
-            bless(p, MobEffects.MOVEMENT_SPEED, 1);
-            bless(p, MobEffects.JUMP, 1);
-            bless(p, MobEffects.DIG_SPEED, 1);
+            bless(p, MobEffects.LUCK, 255);
+            bless(p, MobEffects.MOVEMENT_SPEED, 255);
+            bless(p, MobEffects.JUMP, 255);
+            bless(p, MobEffects.DIG_SPEED, 255);
         }
         // Recover above the same column when falling below the world.
         if (p.getY() < p.level().getMinBuildHeight() - 32) {
