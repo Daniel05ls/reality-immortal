@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="realityimmortal"
+version="1.0.0"
+displayName="Reality Sword & Immortal Armor"
+authors="Dicestion"
+description='''Kiem Thuc Tai va Giap Bat Tu cho Minecraft 1.21.1.'''
+
+[[dependencies.realityimmortal]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.262,21.2)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.realityimmortal]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

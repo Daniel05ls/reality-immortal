@@ -1,0 +1,19 @@
+{
+  "result": {
+    "id": "realityimmortal:immortal_boots",
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_boots"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    }
+  ],
+  "category": "equipment",
+  "type": "minecraft:crafting_shapeless"
+}

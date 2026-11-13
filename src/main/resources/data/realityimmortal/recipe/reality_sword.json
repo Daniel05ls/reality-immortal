@@ -1,0 +1,24 @@
+{
+  "result": {
+    "id": "realityimmortal:reality_sword",
+    "count": 1
+  },
+  "category": "equipment",
+  "pattern": [
+    " S ",
+    " N ",
+    " B "
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "type": "minecraft:crafting_shaped"
+}
