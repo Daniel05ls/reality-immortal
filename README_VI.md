@@ -3,10 +3,9 @@
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Chưa phát hành
+- Hiệu ứng chém đổi thành kiếm khí phong cách kiếm hiệp: một lưỡi năng lượng trắng–vàng dài 5 block, sắc nhọn, thay cho hình lưỡi liềm trước đây. Mỗi lần vung kiếm phóng ra một đạo kiếm khí bay thẳng 36 block với tốc độ nhanh hơn, xuyên qua block, chém chết mọi thứ trên đường đi và để lại vệt sáng vàng; hồi chiêu 0,1 giây.
 - Ngoại hình kiếm và giáp đổi sang phong cách thần thánh: vàng rực với lõi trắng, kiếm có chuôi cánh và đường rune thiên thể, mũ có vương miện, ngực có huy hiệu mặt trời; thay cho tông vũ trụ tím–cyan trước đây. Texture được tạo bằng `tools/make-textures.ps1` (Windows) hoặc `tools/make-textures.py`.
 - Kiếm Thực Tại gây sát thương vô hạn: bất cứ thực thể nào bị chém — kể cả boss và quái mod thêm vào — đều chết. Kết liễu thực tại không còn ngoại lệ nào (kể cả người chơi sáng tạo hay máy chủ tắt PvP), và thực thể nào kháng lại cái chết sẽ bị loại khỏi thế giới.
-- Mỗi lần vung Kiếm Thực Tại phóng ra một lưỡi liềm bay thẳng 30 block, xuyên qua block, chém chết mọi thứ trên đường đi và để lại vệt hạt; hồi chiêu 0,1 giây.
-- Hiệu ứng chém của Kiếm Thực Tại đổi thành hình lưỡi liềm: hai cung hạt cyan–tím chéo trước mặt người chém, dày ở giữa và nhọn ở hai đầu, thay cho chùm lửa hồn trước đây.
 - Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chúng chạm vào giáp Bất Tử hoặc Kiếm Thực Tại mà người chơi đang mang, kể cả đồ dự phòng trong túi.
 - /clear có lọc món đồ vẫn chạy bình thường nếu món lọc không phải đồ Reality; /clear với số lượng 0 (chỉ đếm) cũng không bị chặn.
 - Nếu bất kỳ mục tiêu nào của lệnh đang mang đồ Reality thì cả lệnh bị hủy, kể cả với /clear @a.

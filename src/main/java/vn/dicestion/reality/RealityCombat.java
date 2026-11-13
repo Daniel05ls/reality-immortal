@@ -21,8 +21,9 @@ import org.joml.Vector3f;
 public final class RealityCombat {
     public static final ResourceKey<DamageType> REALITY_CUT = ResourceKey.create(Registries.DAMAGE_TYPE,
         ResourceLocation.fromNamespaceAndPath(RealityImmortal.ID, "reality_cut"));
-    private static final DustParticleOptions CYAN = new DustParticleOptions(new Vector3f(0.15F, 0.95F, 1F), 1.2F);
-    private static final DustParticleOptions PURPLE = new DustParticleOptions(new Vector3f(0.65F, 0.15F, 1F), 1.2F);
+    private static final DustParticleOptions WHITE = new DustParticleOptions(new Vector3f(1F, 1F, 1F), 1.3F);
+    private static final DustParticleOptions LIGHT_GOLD = new DustParticleOptions(new Vector3f(1F, 0.91F, 0.66F), 1.1F);
+    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(1F, 0.79F, 0.24F), 1.0F);
     private RealityCombat() {}
     public static Entity parent(Entity target) {
         if (target instanceof EnderDragonPart part) return part.parentMob;
@@ -52,7 +53,7 @@ public final class RealityCombat {
         ServerLevel level = attacker.serverLevel();
         DamageSource source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
             .getHolderOrThrow(REALITY_CUT), attacker);
-        crescentSlash(level, new Vec3(target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ()),
+        swordQi(level, new Vec3(target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ()),
             attacker.getLookAngle());
         // Impact sparks where the cut lands.
         level.sendParticles(ParticleTypes.ENCHANTED_HIT, target.getX(), target.getY() + target.getBbHeight() * 0.55,
@@ -81,12 +82,12 @@ public final class RealityCombat {
         }
     }
 
-    public static void crescentSlash(ServerLevel level, Vec3 center, Vec3 look) {
-        // A single crescent moon in the plane facing along the given direction,
-        // tilted diagonally like a sword cut. The outer arc is the bright cyan
-        // edge; the inner arc is smaller with its center pushed away from the
-        // belly, so the two arcs meet at pointed tips and the shape is
-        // thickest in the middle, like a crescent moon.
+    public static void swordQi(ServerLevel level, Vec3 center, Vec3 look) {
+        // A wuxia sword-qi blade: a long, thin arc of white-gold energy in
+        // the plane facing along the given direction, tilted diagonally like
+        // a sword cut. Bright white core, golden glowing edges, thickest in
+        // the middle and pointed at both ends, with a leading point at the
+        // apex of the arc.
         Vec3 forward = look.normalize();
         Vec3 right = forward.cross(new Vec3(0, 1, 0));
         if (right.lengthSqr() < 0.001) right = new Vec3(1, 0, 0);
@@ -95,16 +96,29 @@ public final class RealityCombat {
         double tilt = Math.toRadians(35);
         Vec3 u = right.scale(Math.cos(tilt)).add(up.scale(Math.sin(tilt)));
         Vec3 v = right.scale(-Math.sin(tilt)).add(up.scale(Math.cos(tilt)));
-        arc(level, center, u, v, 1.7, -110, 110, 5, CYAN);
-        arc(level, center.add(u.scale(-0.5)), u, v, 1.6, -93, 93, 5, PURPLE);
-    }
-
-    private static void arc(ServerLevel level, Vec3 center, Vec3 u, Vec3 v, double radius,
-            double startDegrees, double endDegrees, double stepDegrees, DustParticleOptions options) {
-        for (double a = startDegrees; a <= endDegrees; a += stepDegrees) {
-            double r = Math.toRadians(a);
-            Vec3 p = center.add(u.scale(Math.cos(r) * radius)).add(v.scale(Math.sin(r) * radius));
-            level.sendParticles(options, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+        for (int i = 0; i <= 16; i++) {
+            double t = i / 8.0 - 1.0; // -1 .. 1 along the blade
+            Vec3 p = center.add(u.scale(t * 2.5)).add(v.scale(0.8 * (1 - t * t)));
+            level.sendParticles(WHITE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+            double half = 0.3 * (1 - t * t);
+            if (half > 0.05) {
+                Vec3 a = p.add(v.scale(half));
+                Vec3 b = p.add(v.scale(-half));
+                level.sendParticles(GOLD, a.x, a.y, a.z, 1, 0, 0, 0, 0);
+                level.sendParticles(GOLD, b.x, b.y, b.z, 1, 0, 0, 0, 0);
+            }
+            if (Math.abs(t) <= 0.3) {
+                Vec3 a = p.add(v.scale(0.15));
+                Vec3 b = p.add(v.scale(-0.15));
+                level.sendParticles(LIGHT_GOLD, a.x, a.y, a.z, 1, 0, 0, 0, 0);
+                level.sendParticles(LIGHT_GOLD, b.x, b.y, b.z, 1, 0, 0, 0, 0);
+            }
         }
+        // Leading point at the apex of the arc.
+        Vec3 apex = center.add(v.scale(0.8));
+        Vec3 tip = apex.add(v.scale(0.25));
+        level.sendParticles(WHITE, tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
+        tip = apex.add(v.scale(0.45));
+        level.sendParticles(WHITE, tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
     }
 }
