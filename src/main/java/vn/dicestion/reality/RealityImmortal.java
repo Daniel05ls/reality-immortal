@@ -62,6 +62,8 @@ public final class RealityImmortal {
         NeoForge.EVENT_BUS.addListener(RealityCombat::onAttack);
         NeoForge.EVENT_BUS.addListener(SpaceRift::tick);
         NeoForge.EVENT_BUS.addListener(SpaceRift::stop);
+        NeoForge.EVENT_BUS.addListener(CrescentSlash::tick);
+        NeoForge.EVENT_BUS.addListener(CrescentSlash::stop);
     }
 
     public static Item.Properties properties() {

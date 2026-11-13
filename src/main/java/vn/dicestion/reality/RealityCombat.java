@@ -54,7 +54,11 @@ public final class RealityCombat {
         ServerLevel level = attacker.serverLevel();
         DamageSource source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
             .getHolderOrThrow(REALITY_CUT), attacker);
-        crescentSlash(level, attacker, target);
+        crescentSlash(level, new Vec3(target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ()),
+            attacker.getLookAngle());
+        // Impact sparks where the cut lands.
+        level.sendParticles(ParticleTypes.ENCHANTED_HIT, target.getX(), target.getY() + target.getBbHeight() * 0.55,
+            target.getZ(), 8, 0.15, 0.15, 0.15, 0.05);
         if (target instanceof LivingEntity living) {
             living.invulnerableTime = 0;
             living.setAbsorptionAmount(0);
@@ -75,25 +79,22 @@ public final class RealityCombat {
         }
     }
 
-    private static void crescentSlash(ServerLevel level, ServerPlayer attacker, Entity target) {
-        // A single crescent moon in the plane facing the attacker, tilted
-        // diagonally like a sword cut. The outer arc is the bright cyan edge;
-        // the inner arc is smaller with its center pushed away from the belly,
-        // so the two arcs meet at pointed tips and the shape is thickest in
-        // the middle, like a crescent moon.
-        Vec3 look = attacker.getLookAngle().normalize();
-        Vec3 center = new Vec3(target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ());
-        Vec3 right = look.cross(new Vec3(0, 1, 0));
+    public static void crescentSlash(ServerLevel level, Vec3 center, Vec3 look) {
+        // A single crescent moon in the plane facing along the given direction,
+        // tilted diagonally like a sword cut. The outer arc is the bright cyan
+        // edge; the inner arc is smaller with its center pushed away from the
+        // belly, so the two arcs meet at pointed tips and the shape is
+        // thickest in the middle, like a crescent moon.
+        Vec3 forward = look.normalize();
+        Vec3 right = forward.cross(new Vec3(0, 1, 0));
         if (right.lengthSqr() < 0.001) right = new Vec3(1, 0, 0);
         right = right.normalize();
-        Vec3 up = right.cross(look).normalize();
+        Vec3 up = right.cross(forward).normalize();
         double tilt = Math.toRadians(35);
         Vec3 u = right.scale(Math.cos(tilt)).add(up.scale(Math.sin(tilt)));
         Vec3 v = right.scale(-Math.sin(tilt)).add(up.scale(Math.cos(tilt)));
         arc(level, center, u, v, 1.7, -110, 110, 5, CYAN);
         arc(level, center.add(u.scale(-0.5)), u, v, 1.6, -93, 93, 5, PURPLE);
-        // Impact sparks where the cut lands.
-        level.sendParticles(ParticleTypes.ENCHANTED_HIT, center.x, center.y, center.z, 8, 0.15, 0.15, 0.15, 0.05);
     }
 
     private static void arc(ServerLevel level, Vec3 center, Vec3 u, Vec3 v, double radius,

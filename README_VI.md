@@ -3,6 +3,7 @@
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Chưa phát hành
+- Mỗi lần vung Kiếm Thực Tại phóng ra một lưỡi liềm bay thẳng 30 block, xuyên qua block, chém chết mọi thứ trên đường đi và để lại vệt hạt; hồi chiêu 0,1 giây.
 - Hiệu ứng chém của Kiếm Thực Tại đổi thành hình lưỡi liềm: hai cung hạt cyan–tím chéo trước mặt người chém, dày ở giữa và nhọn ở hai đầu, thay cho chùm lửa hồn trước đây.
 - Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chúng chạm vào giáp Bất Tử hoặc Kiếm Thực Tại mà người chơi đang mang, kể cả đồ dự phòng trong túi.
 - /clear có lọc món đồ vẫn chạy bình thường nếu món lọc không phải đồ Reality; /clear với số lượng 0 (chỉ đếm) cũng không bị chặn.
