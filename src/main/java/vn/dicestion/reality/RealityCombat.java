@@ -12,7 +12,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.EnderDragonPart;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -34,10 +33,9 @@ public final class RealityCombat {
         Entity target = parent(original);
         if (target == attacker || target.isRemoved() || target.isSpectator()) return false;
         if (target instanceof LivingEntity living && !living.isAlive()) return false;
-        if (target instanceof Player p) {
-            return !p.isCreative() && attacker.server.isPvpAllowed() && attacker.canHarmPlayer(p);
-        }
-        return target instanceof LivingEntity || (target.isAttackable() && target.isPickable());
+        // No other exception: bosses, modded entities and players (including
+        // creative mode and servers with PvP disabled) are all cut.
+        return true;
     }
     public static void onAttack(AttackEntityEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer p)
@@ -69,8 +67,12 @@ public final class RealityCombat {
                 living.setHealth(0.0F);
                 living.die(source);
             }
-            // Preserve the dragon portal/XP sequence and player respawn lifecycle.
-            if (!(living instanceof Player) && !(living instanceof EnderDragon) && living.isAlive()) {
+            // Anything that still refuses to die (a boss phase, a death-cancel
+            // from another mod, a clamped health value) is removed from the
+            // world outright. The dragon's portal/XP sequence is preserved
+            // because die() already ran; this only fires if something kept
+            // it alive afterwards. Players keep the normal respawn lifecycle.
+            if (!(living instanceof Player) && living.isAlive()) {
                 living.discard();
             }
         } else {

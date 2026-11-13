@@ -14,9 +14,12 @@ import net.minecraft.world.level.Level;
 
 public final class RealitySword extends SwordItem {
     public RealitySword() {
-        // Finite attributes; the execution ability provides the unlimited-health kill.
+        // The largest finite float: effectively infinite damage. The value
+        // never reaches a damage formula, because RealityCombat cancels the
+        // vanilla attack before it is computed; the execution guarantees
+        // the kill.
         super(Tiers.NETHERITE, RealityImmortal.properties()
-            .attributes(SwordItem.createAttributes(Tiers.NETHERITE, 995, -2.0F)));
+            .attributes(SwordItem.createAttributes(Tiers.NETHERITE, Float.MAX_VALUE, -2.0F)));
     }
     @Override
     public boolean isEnchantable(ItemStack stack) { return !stack.isEnchanted(); }
