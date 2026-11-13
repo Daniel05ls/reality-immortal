@@ -2,12 +2,21 @@ package vn.dicestion.reality;
 
 import java.util.List;
 import java.util.Map;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.SlotArgument;
+import net.minecraft.commands.arguments.item.ItemPredicateArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -17,6 +26,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -47,6 +57,7 @@ public final class RealityImmortal {
         bus.addListener(RealityImmortal::creativeTab);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::denyDeath);
+        NeoForge.EVENT_BUS.addListener(RealityImmortal::onCommand);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::tick);
         NeoForge.EVENT_BUS.addListener(RealityCombat::onAttack);
         NeoForge.EVENT_BUS.addListener(SpaceRift::tick);
@@ -104,6 +115,100 @@ public final class RealityImmortal {
             p.clearFire();
             p.setAirSupply(p.getMaxAirSupply());
         }
+    }
+
+    private static void onCommand(CommandEvent event) {
+        // /clear and /item would otherwise strip Reality gear straight off the
+        // player, so a command that would remove a protected item is cancelled.
+        // Commands that do not touch Reality gear are left alone.
+        String input = event.getParseResults().getContext().getInput().stripLeading();
+        if (input.startsWith("/")) input = input.substring(1);
+        String name = input.split("\\s+", 2)[0];
+        int colon = name.indexOf(':');
+        if (colon >= 0) name = name.substring(colon + 1);
+        if (!name.equals("clear") && !name.equals("item")) return;
+
+        var context = event.getParseResults().getContext();
+        CommandSourceStack source = context.getSource();
+        if (name.equals("clear")) {
+            if (clearTargets(context, source).stream().anyMatch(p -> wouldClearGear(p, context))) {
+                deny(event, source);
+            }
+        } else if (itemTargets(context).stream().anyMatch(e -> wouldReplaceGear(e, context))) {
+            deny(event, source);
+        }
+    }
+
+    private static List<ServerPlayer> clearTargets(CommandContext<CommandSourceStack> context, CommandSourceStack source) {
+        try {
+            return EntityArgument.getPlayers(context, "targets").stream().toList();
+        } catch (CommandSyntaxException e) {
+            // The selector matched nobody, so the command fails on its own.
+            return List.of();
+        } catch (IllegalArgumentException e) {
+            // Plain /clear without a target argument affects its source.
+            return source.getEntity() instanceof ServerPlayer p ? List.of(p) : List.of();
+        }
+    }
+
+    private static List<Entity> itemTargets(CommandContext<CommandSourceStack> context) {
+        try {
+            return EntityArgument.getEntities(context, "targets").stream().toList();
+        } catch (IllegalArgumentException | CommandSyntaxException e) {
+            // Block targets have no "targets" argument; a selector matching
+            // nothing makes the command fail on its own either way.
+            return List.of();
+        }
+    }
+
+    private static boolean wouldClearGear(ServerPlayer p, CommandContext<CommandSourceStack> context) {
+        // /clear with maxCount 0 only counts items, it removes nothing.
+        try {
+            if (context.getArgument("maxCount", Integer.class) == 0) return false;
+        } catch (IllegalArgumentException ignored) {
+        }
+        ItemPredicate filter = null;
+        try {
+            filter = ItemPredicateArgument.getItemPredicate(context, "item");
+        } catch (IllegalArgumentException ignored) {
+            // No item filter: /clear removes everything the player carries.
+        }
+        for (ItemStack stack : p.getInventory().items) {
+            if (matchesGear(stack, filter)) return true;
+        }
+        for (ItemStack stack : p.getInventory().armor) {
+            if (matchesGear(stack, filter)) return true;
+        }
+        for (ItemStack stack : p.getInventory().offhand) {
+            if (matchesGear(stack, filter)) return true;
+        }
+        return false;
+    }
+
+    private static boolean matchesGear(ItemStack stack, ItemPredicate filter) {
+        return !stack.isEmpty() && isRealityGear(stack) && (filter == null || filter.test(stack));
+    }
+
+    private static boolean wouldReplaceGear(Entity entity, CommandContext<CommandSourceStack> context) {
+        // Covers replace, modify and copy: all of them take the destination slot
+        // as "slot", and all of them remove what is currently in that slot.
+        int slot;
+        try {
+            slot = SlotArgument.getSlot(context, "slot");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return isRealityGear(entity.getSlot(slot).get());
+    }
+
+    private static boolean isRealityGear(ItemStack stack) {
+        return stack.is(SWORD.get()) || stack.is(HELMET.get()) || stack.is(CHEST.get())
+            || stack.is(LEGS.get()) || stack.is(BOOTS.get());
+    }
+
+    private static void deny(CommandEvent event, CommandSourceStack source) {
+        event.setCanceled(true);
+        source.sendFailure(Component.literal("Trang bị Thực Tại kháng lại lệnh này!"));
     }
 
     private static void tick(PlayerTickEvent.Post event) {

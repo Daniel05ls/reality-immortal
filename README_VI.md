@@ -2,6 +2,11 @@
 
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
+## Chưa phát hành
+- Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chúng chạm vào giáp Bất Tử hoặc Kiếm Thực Tại mà người chơi đang mang, kể cả đồ dự phòng trong túi.
+- /clear có lọc món đồ vẫn chạy bình thường nếu món lọc không phải đồ Reality; /clear với số lượng 0 (chỉ đếm) cũng không bị chặn.
+- Nếu bất kỳ mục tiêu nào của lệnh đang mang đồ Reality thì cả lệnh bị hủy, kể cả với /clear @a.
+
 ## Bản 1.1.1
 - Đủ 4 món giáp kháng cả lệnh gây chết: /kill và /damage đều không có tác dụng (trước đây /kill của quản trị viên vẫn có hiệu lực).
 - Kiếm Thực Tại vẫn vượt bảo vệ của Giáp Bất Tử khi PvP được phép.
@@ -22,7 +27,7 @@ Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 - PvP tuân theo cấu hình máy chủ và luật đồng đội; không kết liễu người chơi Creative/Spectator.
 - Kiếm có thể vượt bảo vệ của chính bộ Giáp Bất Tử khi PvP được phép.
 - Đủ 4 món giáp: hủy sát thương thường, hồi đầy máu, oxy, thức ăn, dập lửa, xóa hiệu ứng xấu.
-- Đủ 4 món giáp cũng kháng lệnh gây chết: /kill và /damage đều không có tác dụng. Tháo một món là mất bảo vệ đủ bộ. Lệnh xóa đồ (/clear, /item), kick/ban hay đổi chế độ chơi vẫn có hiệu lực như thường.
+- Đủ 4 món giáp cũng kháng lệnh gây chết: /kill và /damage đều không có tác dụng. Tháo một món là mất bảo vệ đủ bộ. Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chạm vào giáp hoặc kiếm Reality; các lệnh không động vào đồ Reality vẫn chạy bình thường. Kick/ban, đổi chế độ chơi, /tp và /data vẫn có hiệu lực như thường.
 - Không gán giá trị Infinity/NaN cho thuộc tính: tooltip ∞ mô tả cơ chế kết liễu.
   Chỉ số thuộc tính nền vẫn là 1.000; đòn kết liễu dùng sát thương cực lớn, rồi đưa máu về 0
   nếu còn sống. Mob vẫn sống sau các bước này sẽ bị loại bỏ (trừ rồng và người chơi để giữ
