@@ -260,14 +260,14 @@ public final class RealityImmortal {
             // out while the set is worn.
             bless(p, MobEffects.REGENERATION, 1);
             bless(p, MobEffects.FIRE_RESISTANCE, 0);
-            bless(p, MobEffects.STRENGTH, 1);
-            bless(p, MobEffects.RESISTANCE, 1);
+            bless(p, MobEffects.DAMAGE_BOOST, 1);
+            bless(p, MobEffects.DAMAGE_RESISTANCE, 1);
             bless(p, MobEffects.WATER_BREATHING, 0);
             bless(p, MobEffects.NIGHT_VISION, 0);
             bless(p, MobEffects.LUCK, 1);
-            bless(p, MobEffects.SPEED, 1);
-            bless(p, MobEffects.JUMP_BOOST, 1);
-            bless(p, MobEffects.HASTE, 1);
+            bless(p, MobEffects.MOVEMENT_SPEED, 1);
+            bless(p, MobEffects.JUMP, 1);
+            bless(p, MobEffects.DIG_SPEED, 1);
         }
         // Recover above the same column when falling below the world.
         if (p.getY() < p.level().getMinBuildHeight() - 32) {
