@@ -121,14 +121,18 @@ public final class RealityImmortal {
         // /clear and /item would otherwise strip Reality gear straight off the
         // player, so a command that would remove a protected item is cancelled.
         // Commands that do not touch Reality gear are left alone.
-        String input = event.getParseResults().getContext().getInput().stripLeading();
+        // ParseResults holds a CommandContextBuilder, not a CommandContext: the
+        // input comes from its reader, and the context must be built from it
+        // the same way the dispatcher does.
+        var parse = event.getParseResults();
+        String input = parse.getReader().getString().stripLeading();
         if (input.startsWith("/")) input = input.substring(1);
         String name = input.split("\\s+", 2)[0];
         int colon = name.indexOf(':');
         if (colon >= 0) name = name.substring(colon + 1);
         if (!name.equals("clear") && !name.equals("item")) return;
 
-        var context = event.getParseResults().getContext();
+        CommandContext<CommandSourceStack> context = parse.getContext().build(parse.getReader().getString());
         CommandSourceStack source = context.getSource();
         if (name.equals("clear")) {
             if (clearTargets(context, source).stream().anyMatch(p -> wouldClearGear(p, context))) {
