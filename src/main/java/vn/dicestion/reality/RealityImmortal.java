@@ -231,7 +231,9 @@ public final class RealityImmortal {
     }
 
     private static void tick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer p) || !p.isAlive()) return;
+        if (!(event.getEntity() instanceof ServerPlayer p)) return;
+        AngelFlight.tick(p);
+        if (!p.isAlive()) return;
         AttributeInstance health = p.getAttribute(Attributes.MAX_HEALTH);
         if (!fullSet(p)) {
             // Set incomplete: the bonus health goes away again.
