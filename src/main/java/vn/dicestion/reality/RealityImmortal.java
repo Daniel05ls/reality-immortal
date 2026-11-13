@@ -258,9 +258,11 @@ public final class RealityImmortal {
             }
             // Full-set blessings, refreshed every second so they never run
             // out while the set is worn. Everything is at max level:
-            // amplifier 255 (level 256) for the scaling effects. Resistance
-            // caps at level V (100% reduction), and Fire Resistance, Water
-            // Breathing and Night Vision have no levels, so they stay at 0.
+            // amplifier 255 (level 256) for the scaling effects, except
+            // Speed and Jump Boost, which stay at level I so movement
+            // stays controllable. Resistance caps at level V (100%
+            // reduction), and Fire Resistance, Water Breathing and Night
+            // Vision have no levels, so they stay at 0.
             bless(p, MobEffects.REGENERATION, 255);
             bless(p, MobEffects.FIRE_RESISTANCE, 0);
             bless(p, MobEffects.DAMAGE_BOOST, 255);
@@ -268,8 +270,8 @@ public final class RealityImmortal {
             bless(p, MobEffects.WATER_BREATHING, 0);
             bless(p, MobEffects.NIGHT_VISION, 0);
             bless(p, MobEffects.LUCK, 255);
-            bless(p, MobEffects.MOVEMENT_SPEED, 255);
-            bless(p, MobEffects.JUMP, 255);
+            bless(p, MobEffects.MOVEMENT_SPEED, 0);
+            bless(p, MobEffects.JUMP, 0);
             bless(p, MobEffects.DIG_SPEED, 255);
         }
         // Recover above the same column when falling below the world.
