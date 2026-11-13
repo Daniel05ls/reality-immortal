@@ -61,10 +61,18 @@ public final class RealityImmortal {
     // Immortal set is worn.
     private static final ResourceLocation EXTRA_HEALTH_ID = ResourceLocation.fromNamespaceAndPath(ID, "immortal_health");
 
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GOD_TAB = TABS.register("god_arsenal", () ->
+        CreativeModeTab.builder().title(Component.literal("God Arsenal"))
+            .icon(() -> SWORD.get().getDefaultInstance())
+            .displayItems((params, out) -> {
+                out.accept(SWORD.get()); out.accept(HELMET.get()); out.accept(CHEST.get());
+                out.accept(LEGS.get()); out.accept(BOOTS.get());
+            }).build());
     public RealityImmortal(IEventBus bus) {
         MATERIALS.register(bus);
         ITEMS.register(bus);
-        bus.addListener(RealityImmortal::creativeTab);
+        TABS.register(bus);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::denyDeath);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::onCommand);
@@ -87,15 +95,6 @@ public final class RealityImmortal {
             properties().durability(type.getDurability(37))));
     }
 
-    private static void creativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey().equals(CreativeModeTabs.COMBAT)) {
-            event.accept(SWORD.get());
-            event.accept(HELMET.get());
-            event.accept(CHEST.get());
-            event.accept(LEGS.get());
-            event.accept(BOOTS.get());
-        }
-    }
 
     public static boolean fullSet(Player p) {
         return p.getItemBySlot(EquipmentSlot.HEAD).is(HELMET.get())

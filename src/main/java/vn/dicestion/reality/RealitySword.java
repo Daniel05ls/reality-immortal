@@ -67,9 +67,9 @@ public final class RealitySword extends SwordItem {
         }
     }
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int remainingTicks) {
         if (!(level instanceof ServerLevel server) || !(entity instanceof ServerPlayer sp)) return;
-        if (timeCharged < RealityCombat.MIN_CHARGE_TICKS) {
+        if (getUseDuration(stack, entity) - remainingTicks < RealityCombat.MIN_CHARGE_TICKS) {
             // Quick tap: Space Rift, as before (if its cooldown allows).
             if (!sp.getCooldowns().isOnCooldown(this)) {
                 SpaceRift.cast(server, sp);
