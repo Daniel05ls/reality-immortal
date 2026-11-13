@@ -3,6 +3,7 @@
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Chưa phát hành
+- Hiệu ứng chém của Kiếm Thực Tại đổi thành hình lưỡi liềm: hai cung hạt cyan–tím chéo trước mặt người chém, dày ở giữa và nhọn ở hai đầu, thay cho chùm lửa hồn trước đây.
 - Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chúng chạm vào giáp Bất Tử hoặc Kiếm Thực Tại mà người chơi đang mang, kể cả đồ dự phòng trong túi.
 - /clear có lọc món đồ vẫn chạy bình thường nếu món lọc không phải đồ Reality; /clear với số lượng 0 (chỉ đếm) cũng không bị chặn.
 - Nếu bất kỳ mục tiêu nào của lệnh đang mang đồ Reality thì cả lệnh bị hủy, kể cả với /clear @a.
