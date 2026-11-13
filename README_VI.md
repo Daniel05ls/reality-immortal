@@ -18,7 +18,7 @@ Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 - PvP tuân theo cấu hình máy chủ và luật đồng đội; không kết liễu người chơi Creative/Spectator.
 - Kiếm có thể vượt bảo vệ của chính bộ Giáp Bất Tử khi PvP được phép.
 - Đủ 4 món giáp: hủy sát thương thường, hồi đầy máu, oxy, thức ăn, dập lửa, xóa hiệu ứng xấu.
-- /kill của quản trị viên vẫn có hiệu lực. Tháo một món là mất bảo vệ đủ bộ.
+- Đủ 4 món giáp cũng kháng lệnh gây chết: /kill và /damage đều không có tác dụng. Tháo một món là mất bảo vệ đủ bộ. Lệnh xóa đồ (/clear, /item), kick/ban hay đổi chế độ chơi vẫn có hiệu lực như thường.
 - Không gán giá trị Infinity/NaN cho thuộc tính: tooltip ∞ mô tả cơ chế kết liễu.
   Chỉ số thuộc tính nền vẫn là 1.000; đòn kết liễu dùng sát thương cực lớn, rồi đưa máu về 0
   nếu còn sống. Mob vẫn sống sau các bước này sẽ bị loại bỏ (trừ rồng và người chơi để giữ
@@ -52,7 +52,7 @@ Công thức tạo vật phẩm mới, không giữ enchant hoặc tên của ng
 
 ## Build
 GitHub Actions tự dùng Temurin JDK 21 và Gradle 8.14.3 để kiểm tra tài nguyên và build JAR.
-Trên Windows đã có JDK 21 và JAVA_HOME: chạy `powershell -ExecutionPolicy Bypass -File .\build-mod.ps1`.
+Trên Windows đã có JDK 21 và JAVA_HOME: chạy `powershell -ExecutionPolicy Bypass -File .\\build-mod.ps1`.
 Không cần Java trên máy cá nhân nếu chỉ dùng Actions để build.
 
 ## Kiểm thử

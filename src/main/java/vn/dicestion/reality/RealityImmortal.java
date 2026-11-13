@@ -12,13 +12,13 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.Unbreakable;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -46,6 +46,7 @@ public final class RealityImmortal {
         ITEMS.register(bus);
         bus.addListener(RealityImmortal::creativeTab);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
+        NeoForge.EVENT_BUS.addListener(RealityImmortal::denyDeath);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::tick);
         NeoForge.EVENT_BUS.addListener(RealityCombat::onAttack);
         NeoForge.EVENT_BUS.addListener(SpaceRift::tick);
@@ -81,11 +82,27 @@ public final class RealityImmortal {
     }
 
     private static void protect(LivingIncomingDamageEvent event) {
-        // Respect administrative /kill. Do not mutate creative/invulnerable abilities.
+        // Full set blocks every damage source, including generic_kill from commands
+        // such as /damage. Only the Reality Sword's own cut may pass, so the sword
+        // still beats the armor in PvP.
         if (event.getEntity() instanceof ServerPlayer p && fullSet(p)
-                && !event.getSource().is(DamageTypes.GENERIC_KILL)
                 && !event.getSource().is(RealityCombat.REALITY_CUT)) {
             event.setCanceled(true);
+        }
+    }
+
+    private static void denyDeath(LivingDeathEvent event) {
+        // /kill bypasses damage events entirely: LivingEntity.kill() sets health to 0
+        // and calls die() directly, so the death itself must be cancelled here.
+        // Health is restored at once, otherwise the player would stay at 0 HP and
+        // count as "not alive" even though death was cancelled.
+        // The Reality Sword's cut is still allowed through, preserving PvP behavior.
+        if (event.getEntity() instanceof ServerPlayer p && fullSet(p)
+                && !event.getSource().is(RealityCombat.REALITY_CUT)) {
+            event.setCanceled(true);
+            p.setHealth(p.getMaxHealth());
+            p.clearFire();
+            p.setAirSupply(p.getMaxAirSupply());
         }
     }
 
