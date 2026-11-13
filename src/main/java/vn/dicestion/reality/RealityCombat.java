@@ -97,9 +97,9 @@ public final class RealityCombat {
         // a sword cut. Bright white core, golden glowing edges, thickest in
         // the middle and pointed at both ends, with a leading point at the
         // apex of the arc.
-        Basis b = bladeBasis(look);
-        Vec3 u = b.u();
-        Vec3 v = b.v();
+        Basis basis = bladeBasis(look);
+        Vec3 u = basis.u();
+        Vec3 v = basis.v();
         for (int i = 0; i <= 16; i++) {
             double t = i / 8.0 - 1.0; // -1 .. 1 along the blade
             Vec3 p = center.add(u.scale(t * 2.5)).add(v.scale(0.8 * (1 - t * t)));
@@ -149,7 +149,7 @@ public final class RealityCombat {
      * world, dropping their block item when they have one.
      */
     public static void shatterBlocks(ServerLevel level, Vec3 from, Vec3 to, Vec3 dir) {
-        Basis b = bladeBasis(dir);
+        Basis basis = bladeBasis(dir);
         AABB box = new AABB(from, to).inflate(3.0);
         Vec3 travel = to.subtract(from);
         double travelLenSq = travel.lengthSqr();
@@ -167,7 +167,7 @@ public final class RealityCombat {
             if (along < 0 || along > 1) continue;
             Vec3 closest = from.add(travel.scale(along));
             Vec3 off = c.subtract(closest);
-            if (Math.abs(off.dot(b.u())) > 2.6 || Math.abs(off.dot(b.v())) > 0.9) continue;
+            if (Math.abs(off.dot(basis.u())) > 2.6 || Math.abs(off.dot(basis.v())) > 0.9) continue;
             if (state.getDestroySpeed(level, p) < 0) {
                 Item item = state.getBlock().asItem();
                 level.levelEvent(2001, p, Block.getId(state));
