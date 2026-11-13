@@ -10,12 +10,16 @@ for path in root.rglob('*'):
 items = ['reality_sword', 'immortal_helmet', 'immortal_chestplate', 'immortal_leggings', 'immortal_boots']
 for item in items:
     model = read(f'assets/realityimmortal/models/item/{item}.json')
-    assert len(model['elements']) >= (40 if item == 'reality_sword' else 10)
+    if item == 'reality_sword':
+        assert len(model['elements']) >= 40
+    else:
+        assert model['parent'] == 'minecraft:item/generated'
+        assert model['textures']['layer0'] == f'realityimmortal:item/{item}'
     for texture in model['textures'].values():
         namespace, name = texture.split(':')
         image = root / f'assets/{namespace}/textures/{name}.png'
         assert image.read_bytes()[:8] == b'\x89PNG\r\n\x1a\n'
-    for element in model['elements']:
+    for element in model.get('elements', []):
         assert all(-16 <= x <= 32 for x in element['from'] + element['to'])
         assert all(a < b for a,b in zip(element['from'],element['to']))
         for face in element['faces'].values():
@@ -33,4 +37,4 @@ for layer in [1,2]:
     assert struct.unpack('>II',png[16:24]) == (128,128)
 for tag in ['bypasses_armor','bypasses_shield','bypasses_invulnerability','bypasses_cooldown','bypasses_resistance','bypasses_enchantments','bypasses_effects']:
     assert 'realityimmortal:reality_cut' in read(f'data/minecraft/tags/damage_type/{tag}.json')['values']
-print('PASS: five 3D item models, geometry bounds/rotations, texture references, 128px armor atlases, enchantment/damage tags')
+print('PASS: 3D sword and four visible 2D armor icons, geometry bounds/rotations, texture references, 128px armor atlases, enchantment/damage tags')
