@@ -29,7 +29,7 @@ public final class CrescentSlash {
     private static final double RANGE = 50;       // blocks
     private static final double SCALE = 5.0 / 3.0; // wide charged blade (10-block strokes)
     private static final int MAX_ACTIVE = 32;
-    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(0.08F, 0.8F, 1F), 1.0F);
+    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(1F, 0.73F, 0.08F), 1.0F);
     private static final Map<ServerLevel, List<Slash>> ACTIVE = new WeakHashMap<>();
     private record Slash(ServerPlayer player, Vec3 start, Vec3 pos, Vec3 dir) {}
     private CrescentSlash() {}
@@ -47,6 +47,7 @@ public final class CrescentSlash {
 
     public static void tick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
+        BlockCutQueue.tick(level);
         List<Slash> slashes = ACTIVE.get(level);
         if (slashes == null) return;
         List<Slash> next = new ArrayList<>(slashes.size());
@@ -66,7 +67,9 @@ public final class CrescentSlash {
             // scaled up for the wide blade) and is wider than one tick of
             // travel, so nothing can slip between two positions.
             for (Entity candidate : level.getEntities(s.player(), new AABB(pos, pos).inflate(3.4 * SCALE),
-                    e -> RealityCombat.canCut(s.player(), e))) {
+                    e -> !(e instanceof net.minecraft.world.entity.item.ItemEntity)
+                        && !(e instanceof net.minecraft.world.entity.ExperienceOrb)
+                        && RealityCombat.canCut(s.player(), e))) {
                 if (candidate.getBoundingBox().inflate(3.0 * SCALE).contains(pos)) {
                     RealityCombat.cut(s.player(), candidate);
                 }
@@ -79,5 +82,6 @@ public final class CrescentSlash {
 
     public static void stop(ServerStoppedEvent event) {
         ACTIVE.clear();
+        BlockCutQueue.clear();
     }
 }

@@ -122,9 +122,9 @@ public final class RealityCombat {
         }
     }
 
-    private static final DustParticleOptions CYAN_EDGE = new DustParticleOptions(new Vector3f(0.08F,0.88F,1F),0.7F);
-    private static final DustParticleOptions ICE_CORE = new DustParticleOptions(new Vector3f(0.87F,1F,1F),0.46F);
-    private static final DustParticleOptions BLUE_TRAIL = new DustParticleOptions(new Vector3f(0.06F,0.38F,0.7F),0.9F);
+    private static final DustParticleOptions CYAN_EDGE = new DustParticleOptions(new Vector3f(1F,0.73F,0.08F),0.7F);
+    private static final DustParticleOptions ICE_CORE = new DustParticleOptions(new Vector3f(1F,0.98F,0.82F),0.46F);
+    private static final DustParticleOptions BLUE_TRAIL = new DustParticleOptions(new Vector3f(0.85F,0.38F,0.025F),0.9F);
 
     public static void swordQi(ServerLevel level, Vec3 center, Vec3 look, double scale) {
         Basis basis=bladeBasis(look);
@@ -184,8 +184,7 @@ public final class RealityCombat {
                 Mth.floor(box.minX), Mth.floor(box.minY), Mth.floor(box.minZ),
                 Mth.floor(box.maxX), Mth.floor(box.maxY), Mth.floor(box.maxZ))) {
             if (level.isOutsideBuildHeight(p)) continue;
-            BlockState state = level.getBlockState(p);
-            if (state.isAir() || state.liquid()) continue;
+
             // Keep only blocks inside one of the two diagonal strokes of
             // the X. The strokes run along (u+v) and (u-v), so the
             // coordinates along and across one stroke are the across and
@@ -203,16 +202,10 @@ public final class RealityCombat {
             double t2=s1/(2.34*scale);
             boolean onStroke2 = Math.abs(t2)<=1 && Math.abs(p1+0.8*scale-0.9*scale*(1-t2*t2))<=0.55*scale;
             if (!onStroke1 && !onStroke2) continue;
-            if (state.getDestroySpeed(level, p) < 0) {
-                Item item = state.getBlock().asItem();
-                level.levelEvent(2001, p, Block.getId(state));
-                level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
-                if (item != Items.AIR) {
-                    Block.popResource(level, p, new ItemStack(item));
-                }
-            } else {
-                level.destroyBlock(p, true);
-            }
+            // Read world state only after the geometry test; never load distant chunks.
+            if (!level.hasChunkAt(p)) continue;
+            BlockState state=level.getBlockState(p);
+            if (!state.isAir() && !state.liquid()) BlockCutQueue.enqueue(level,p,state);
         }
     }
 }
