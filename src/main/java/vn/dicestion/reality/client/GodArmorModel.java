@@ -54,6 +54,39 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
                         PartPose.offsetAndRotation(side*reach,rise-0.2F,-0.15F+i*0.16F,0,0,-side*0.25F));
                 }
             }
+            // Two additional pairs create the six-wing seraph silhouette.
+            for (int side : new int[]{-1,1}) {
+                PartDefinition parent = body.getChild(side<0?"angel_left":"angel_right");
+                for (int tier=0;tier<2;tier++) {
+                    PartDefinition fan=parent.addOrReplaceChild("seraph_tier_"+tier,
+                        gold().addBox(-0.5F,-0.5F,-0.5F,1,2,1),
+                        PartPose.offsetAndRotation(0,tier==0?-4:5,1.8F+tier,
+                            0,0,side*(tier==0?0.65F:-0.55F)));
+                    for(int i=0;i<7;i++) {
+                        float x=side*(2+i*1.25F);
+                        float y=-2-(float)Math.sin(i/6F*Math.PI)*3;
+                        float len=4+i*0.75F;
+                        fan.addOrReplaceChild("plume_"+i,ivory().addBox(-0.8F,0,-0.35F,1.6F,len,0.7F),
+                            PartPose.offsetAndRotation(x,y,i*0.14F,0.12F,0,-side*(0.25F+i*0.08F)));
+                        fan.addOrReplaceChild("gold_quill_"+i,gold().addBox(-0.12F,0,-0.55F,0.24F,len*0.7F,0.25F),
+                            PartPose.offsetAndRotation(x,y,i*0.14F,0.12F,0,-side*(0.25F+i*0.08F)));
+                    }
+                }
+            }
+            // Celestial sun-wheel: concentric gold/ivory rings and twelve rays.
+            PartDefinition wheel=body.addOrReplaceChild("sun_wheel",CubeListBuilder.create(),PartPose.offset(0,0,7));
+            for(int i=0;i<32;i++) {
+                float a=(float)(i*Math.PI/16);
+                wheel.addOrReplaceChild("outer_"+i,gold().addBox(-1.0F,-0.25F,-0.3F,2,0.5F,0.6F),
+                    PartPose.offsetAndRotation((float)Math.cos(a)*10,(float)Math.sin(a)*10,0,0,0,a+(float)Math.PI/2));
+                wheel.addOrReplaceChild("inner_"+i,ivory().addBox(-0.8F,-0.15F,-0.2F,1.6F,0.3F,0.4F),
+                    PartPose.offsetAndRotation((float)Math.cos(a)*8.7F,(float)Math.sin(a)*8.7F,-0.1F,0,0,a+(float)Math.PI/2));
+            }
+            for(int i=0;i<12;i++) {
+                float a=(float)(i*Math.PI/6);
+                wheel.addOrReplaceChild("ray_"+i,crystal().addBox(-0.3F,-2,-0.35F,0.6F,4,0.7F),
+                    PartPose.offsetAndRotation((float)Math.cos(a)*11.8F,(float)Math.sin(a)*11.8F,0,0,0,a-(float)Math.PI/2));
+            }
             // Raised brow, crystal visor and five crown points.
             head.addOrReplaceChild("brow", gold().addBox(-4.5F,-8.5F,-5.15F,9,1.2F,1.1F), PartPose.ZERO);
             head.addOrReplaceChild("visor", crystal().addBox(-3.5F,-5.9F,-5.1F,7,0.8F,0.65F), PartPose.ZERO);
@@ -78,12 +111,16 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
                     PartPose.offsetAndRotation((float)Math.cos(a)*5.4F,-6+(float)Math.sin(a)*5.4F,5.4F,0,0,a+(float)Math.PI/2));
             }
             body.addOrReplaceChild("breastplate", ivory().addBox(-4.4F,1,-3.35F,8.8F,5,1.5F),PartPose.ZERO);
+            for(int side:new int[]{-1,1}) for(int i=0;i<3;i++)
+                body.addOrReplaceChild("chest_engraving_"+side+"_"+i,
+                    gold().addBox(0,-0.15F,-0.2F,2.8F,0.3F,0.4F),
+                    PartPose.offsetAndRotation(side*(0.5F+i*0.6F),2.5F+i,-4.95F,0,0,side*0.55F));
             body.addOrReplaceChild("core_frame", gold().addBox(-1.8F,-1.8F,-0.6F,3.6F,3.6F,1.2F),
                 PartPose.offsetAndRotation(0,4,-4,0,0,(float)Math.PI/4));
             body.addOrReplaceChild("core", crystal().addBox(-1.1F,-1.1F,-0.75F,2.2F,2.2F,1.5F),
                 PartPose.offsetAndRotation(0,4,-4.5F,0,0,(float)Math.PI/4));
             for(int i=0;i<3;i++) body.addOrReplaceChild("abdomen_"+i,
-                dark().addBox(-3.6F,0,-3.2F,7.2F,1.5F,1),PartPose.offset(0,6.6F+i*1.6F,0));
+                ivory().addBox(-3.6F,0,-3.2F,7.2F,1.5F,1),PartPose.offset(0,6.6F+i*1.6F,0));
             body.addOrReplaceChild("belt",gold().addBox(-4.9F,10.4F,-3.4F,9.8F,1.1F,6.8F),PartPose.ZERO);
             body.addOrReplaceChild("back_spine",gold().addBox(-0.6F,1,3,1.2F,9,1.1F),PartPose.ZERO);
             for(int side:new int[]{-1,1}) {
@@ -94,7 +131,7 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
                 for(int i=0;i<3;i++) arm.addOrReplaceChild("wing_fin_"+i,
                     ivory().addBox(-0.5F,-3.8F,0,1,4.5F,3.8F),
                     PartPose.offsetAndRotation(center+side*(1.2F+i*0.9F),-1-i*0.7F,1+i*0.8F,0.3F,0,side*(0.3F+i*0.12F)));
-                arm.addOrReplaceChild("gauntlet",dark().addBox(-2.6F,5,-2.7F,5.2F,4.7F,5.4F),PartPose.offset(center,0,0));
+                arm.addOrReplaceChild("gauntlet",ivory().addBox(-2.6F,5,-2.7F,5.2F,4.7F,5.4F),PartPose.offset(center,0,0));
                 arm.addOrReplaceChild("gauntlet_rim",gold().addBox(-2.8F,8.8F,-2.9F,5.6F,0.8F,5.8F),PartPose.offset(center,0,0));
                 arm.addOrReplaceChild("rune",crystal().addBox(-0.5F,5.5F,-3,1,2.8F,0.5F),PartPose.offset(center,0,0));
             }
