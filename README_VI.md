@@ -3,6 +3,7 @@
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Chưa phát hành
+- Ngoại hình kiếm và giáp đổi sang phong cách thần thánh: vàng rực với lõi trắng, kiếm có chuôi cánh và đường rune thiên thể, mũ có vương miện, ngực có huy hiệu mặt trời; thay cho tông vũ trụ tím–cyan trước đây. Texture được tạo bằng `tools/make-textures.ps1` (Windows) hoặc `tools/make-textures.py`.
 - Kiếm Thực Tại gây sát thương vô hạn: bất cứ thực thể nào bị chém — kể cả boss và quái mod thêm vào — đều chết. Kết liễu thực tại không còn ngoại lệ nào (kể cả người chơi sáng tạo hay máy chủ tắt PvP), và thực thể nào kháng lại cái chết sẽ bị loại khỏi thế giới.
 - Mỗi lần vung Kiếm Thực Tại phóng ra một lưỡi liềm bay thẳng 30 block, xuyên qua block, chém chết mọi thứ trên đường đi và để lại vệt hạt; hồi chiêu 0,1 giây.
 - Hiệu ứng chém của Kiếm Thực Tại đổi thành hình lưỡi liềm: hai cung hạt cyan–tím chéo trước mặt người chém, dày ở giữa và nhọn ở hai đầu, thay cho chùm lửa hồn trước đây.
