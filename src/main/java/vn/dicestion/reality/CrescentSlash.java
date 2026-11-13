@@ -18,10 +18,10 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.joml.Vector3f;
 
 /**
- * A flying sword-qi blade launched by every swing of the Reality Sword.
- * It travels straight ahead, smashes through blocks (dropping them as
- * items), cuts everything it touches, and leaves a golden glowing wake
- * behind it. There is no cooldown: every swing launches a new blade.
+ * A flying sword-qi blade launched only by a fully charged critical hit
+ * with the Reality Sword (see RealityCombat.isChargedCrit). It travels
+ * straight ahead, smashes through blocks (dropping them as items), cuts
+ * everything it touches, and leaves a golden glowing wake behind it.
  * Server-side only.
  */
 public final class CrescentSlash {
@@ -61,11 +61,12 @@ public final class CrescentSlash {
             level.sendParticles(GOLD, behind.x, behind.y, behind.z, 2, 0.15, 0.15, 0.15, 0);
             level.sendParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.1, 0.1, 0.1, 0.01);
             // Cut everything the blade passes through. The check radius matches
-            // the blade's width and is wider than one tick of travel, so
-            // nothing can slip between two positions.
-            for (Entity candidate : level.getEntities(s.player(), new AABB(pos, pos).inflate(3.2),
+            // the X's reach (its stroke tips are 3 blocks from the center)
+            // and is wider than one tick of travel, so nothing can slip
+            // between two positions.
+            for (Entity candidate : level.getEntities(s.player(), new AABB(pos, pos).inflate(3.4),
                     e -> RealityCombat.canCut(s.player(), e))) {
-                if (candidate.getBoundingBox().inflate(2.8).contains(pos)) {
+                if (candidate.getBoundingBox().inflate(3.0).contains(pos)) {
                     RealityCombat.cut(s.player(), candidate);
                 }
             }

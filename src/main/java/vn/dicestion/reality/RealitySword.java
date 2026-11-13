@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -31,15 +30,6 @@ public final class RealitySword extends SwordItem {
         lines.add(Component.translatable("tooltip.realityimmortal.infinity").withStyle(ChatFormatting.LIGHT_PURPLE));
         lines.add(Component.translatable("tooltip.realityimmortal.rift").withStyle(ChatFormatting.AQUA));
         lines.add(Component.translatable("tooltip.realityimmortal.enchantable").withStyle(ChatFormatting.GRAY));
-    }
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        // Every swing launches a flying crescent blade (server side only).
-        // Returning false keeps the normal swing animation.
-        if (entity.level() instanceof ServerLevel level && entity instanceof ServerPlayer sp) {
-            CrescentSlash.tryLaunch(level, sp);
-        }
-        return false;
     }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {

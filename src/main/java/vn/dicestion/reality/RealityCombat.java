@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.EnderDragonPart;
@@ -51,10 +52,33 @@ public final class RealityCombat {
         if (!(event.getEntity() instanceof ServerPlayer p)
                 || !p.getMainHandItem().is(RealityImmortal.SWORD.get())) return;
         event.setCanceled(true);
+        // Only a fully charged critical hit releases the flying sword-qi
+        // blade; ordinary swings cut the target but launch nothing.
+        if (isChargedCrit(p, event.getTarget())) {
+            CrescentSlash.tryLaunch(p.serverLevel(), p);
+        }
         if (canCut(p, event.getTarget())) {
             cut(p, event.getTarget());
             p.resetAttackStrengthTicker();
         }
+    }
+
+    /**
+     * True when this attack is a fully charged critical hit: the attack
+     * meter is completely full (the sword qi has finished charging) and
+     * the strike lands while falling, as a vanilla critical hit does.
+     */
+    public static boolean isChargedCrit(ServerPlayer attacker, Entity original) {
+        if (attacker.getAttackStrengthScale(0.0F) < 1.0F) return false;
+        Entity target = parent(original);
+        return target instanceof LivingEntity
+            && attacker.fallDistance > 0.0F
+            && !attacker.onGround()
+            && !attacker.onClimbable()
+            && !attacker.isInWater()
+            && !attacker.hasEffect(MobEffects.BLINDNESS)
+            && !attacker.isPassenger()
+            && !attacker.isSprinting();
     }
     public static void cut(ServerPlayer attacker, Entity original) {
         if (!canCut(attacker, original)) return;
@@ -92,38 +116,41 @@ public final class RealityCombat {
     }
 
     public static void swordQi(ServerLevel level, Vec3 center, Vec3 look) {
-        // A wuxia sword-qi blade: a long, thin arc of white-gold energy in
-        // the plane facing along the given direction, tilted diagonally like
-        // a sword cut. Bright white core, golden glowing edges, thickest in
-        // the middle and pointed at both ends, with a leading point at the
-        // apex of the arc.
+        // Three crescents nested into a slightly curved X: two large
+        // crescents cross as the strokes of the X, curving toward each
+        // other, and a smaller crescent sits nested at the crossing,
+        // curving the other way. Bright white core, golden glowing edges.
         Basis basis = bladeBasis(look);
         Vec3 u = basis.u();
         Vec3 v = basis.v();
-        for (int i = 0; i <= 16; i++) {
-            double t = i / 8.0 - 1.0; // -1 .. 1 along the blade
-            Vec3 p = center.add(u.scale(t * 2.5)).add(v.scale(0.8 * (1 - t * t)));
+        Vec3 d1 = u.add(v).normalize();      // bottom-left -> top-right
+        Vec3 d2 = u.subtract(v).normalize(); // top-left -> bottom-right
+        crescent(level, center, d1, d2.scale(-1), 6.0, 0.8);
+        crescent(level, center, d2, d1, 6.0, 0.8);
+        crescent(level, center, d1, d2, 2.6, 0.4);
+    }
+
+    private static void crescent(ServerLevel level, Vec3 center, Vec3 dir, Vec3 bulgeDir, double length, double bulge) {
+        // One crescent stroke: a curved arc, thick in the middle and pointed
+        // at both ends, with a bright white core and golden edges.
+        for (int i = 0; i <= 14; i++) {
+            double t = i / 7.0 - 1.0; // -1 .. 1 along the stroke
+            Vec3 p = center.add(dir.scale(t * length / 2)).add(bulgeDir.scale(bulge * (1 - t * t)));
             level.sendParticles(WHITE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-            double half = 0.3 * (1 - t * t);
+            double half = 0.28 * (1 - t * t);
             if (half > 0.05) {
-                Vec3 a = p.add(v.scale(half));
-                Vec3 b = p.add(v.scale(-half));
-                level.sendParticles(GOLD, a.x, a.y, a.z, 1, 0, 0, 0, 0);
-                level.sendParticles(GOLD, b.x, b.y, b.z, 1, 0, 0, 0, 0);
+                Vec3 edgeUp = p.add(bulgeDir.scale(half));
+                Vec3 edgeDown = p.add(bulgeDir.scale(-half));
+                level.sendParticles(GOLD, edgeUp.x, edgeUp.y, edgeUp.z, 1, 0, 0, 0, 0);
+                level.sendParticles(GOLD, edgeDown.x, edgeDown.y, edgeDown.z, 1, 0, 0, 0, 0);
             }
             if (Math.abs(t) <= 0.3) {
-                Vec3 a = p.add(v.scale(0.15));
-                Vec3 b = p.add(v.scale(-0.15));
-                level.sendParticles(LIGHT_GOLD, a.x, a.y, a.z, 1, 0, 0, 0, 0);
-                level.sendParticles(LIGHT_GOLD, b.x, b.y, b.z, 1, 0, 0, 0, 0);
+                Vec3 coreUp = p.add(bulgeDir.scale(0.14));
+                Vec3 coreDown = p.add(bulgeDir.scale(-0.14));
+                level.sendParticles(LIGHT_GOLD, coreUp.x, coreUp.y, coreUp.z, 1, 0, 0, 0, 0);
+                level.sendParticles(LIGHT_GOLD, coreDown.x, coreDown.y, coreDown.z, 1, 0, 0, 0, 0);
             }
         }
-        // Leading point at the apex of the arc.
-        Vec3 apex = center.add(v.scale(0.8));
-        Vec3 tip = apex.add(v.scale(0.25));
-        level.sendParticles(WHITE, tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
-        tip = apex.add(v.scale(0.45));
-        level.sendParticles(WHITE, tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
     }
 
     /** The in-plane axes of the sword-qi blade for a given facing direction. */
@@ -135,18 +162,17 @@ public final class RealityCombat {
         if (right.lengthSqr() < 0.001) right = new Vec3(1, 0, 0);
         right = right.normalize();
         Vec3 up = right.cross(forward).normalize();
-        double tilt = Math.toRadians(35);
-        return new Basis(
-            right.scale(Math.cos(tilt)).add(up.scale(Math.sin(tilt))),
-            right.scale(-Math.sin(tilt)).add(up.scale(Math.cos(tilt))));
+        return new Basis(right, up);
     }
 
     /**
      * Smashes every block the flying sword-qi blade passes through on its
-     * way from {@code from} to {@code to}. Blocks break with their normal
-     * drops, so structures are torn apart and their blocks fall as items.
-     * Even unbreakable blocks (bedrock and the like) are torn out of the
-     * world, dropping their block item when they have one.
+     * way from {@code from} to {@code to}. Only blocks the X-shaped blade
+     * actually crosses are broken: the two diagonal strokes, allowing for
+     * their curve. Blocks break with their normal drops, so structures
+     * are torn apart and their blocks fall as items. Even unbreakable
+     * blocks (bedrock and the like) are torn out of the world, dropping
+     * their block item when they have one.
      */
     public static void shatterBlocks(ServerLevel level, Vec3 from, Vec3 to, Vec3 dir) {
         Basis basis = bladeBasis(dir);
@@ -159,15 +185,21 @@ public final class RealityCombat {
             if (level.isOutsideBuildHeight(p)) continue;
             BlockState state = level.getBlockState(p);
             if (state.isAir() || state.liquid()) continue;
-            // Keep only blocks inside the thin slab the blade sweeps through:
-            // within the blade's width along u and its thickness along v.
+            // Keep only blocks inside one of the two diagonal strokes of
+            // the X. The strokes run along (u+v) and (u-v), so the
+            // coordinates along and across one stroke are the across and
+            // along coordinates of the other.
             Vec3 c = Vec3.atCenterOf(p);
             Vec3 rel = c.subtract(from);
             double along = travelLenSq < 1e-6 ? 0 : rel.dot(travel) / travelLenSq;
             if (along < 0 || along > 1) continue;
             Vec3 closest = from.add(travel.scale(along));
             Vec3 off = c.subtract(closest);
-            if (Math.abs(off.dot(basis.u())) > 2.6 || Math.abs(off.dot(basis.v())) > 0.9) continue;
+            double s1 = (off.dot(basis.u()) + off.dot(basis.v())) / Math.sqrt(2);
+            double p1 = (off.dot(basis.u()) - off.dot(basis.v())) / Math.sqrt(2);
+            boolean onStroke1 = Math.abs(s1) <= 3.0 && Math.abs(p1) <= 1.0;
+            boolean onStroke2 = Math.abs(p1) <= 3.0 && Math.abs(s1) <= 1.0;
+            if (!onStroke1 && !onStroke2) continue;
             if (state.getDestroySpeed(level, p) < 0) {
                 Item item = state.getBlock().asItem();
                 level.levelEvent(2001, p, Block.getId(state));

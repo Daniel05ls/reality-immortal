@@ -3,9 +3,10 @@
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Chưa phát hành
-- Hiệu ứng chém đổi thành kiếm khí phong cách kiếm hiệp: một lưỡi năng lượng trắng–vàng dài 5 block, sắc nhọn, thay cho hình lưỡi liềm trước đây. Mỗi lần vung kiếm phóng ra một đạo kiếm khí bay thẳng 36 block với tốc độ nhanh hơn, chém chết mọi thứ trên đường đi và để lại vệt sáng vàng.
+- Kiếm khí đổi thành hình chữ X: 3 lưỡi liềm lồng vào nhau, hai lưỡi lớn chéo nhau thành chữ X hơi cong vào nhau và một lưỡi nhỏ lồng ở giữa, trắng–vàng.
+- Đánh thường không còn phóng kiếm khí: chỉ trọng kích đã nạp đầy mới phóng ra một đạo kiếm khí. Đợi thanh tấn công nạp đầy rồi nhảy lên đánh chí mạng thì kiếm khí mới bay ra.
 - Đạo kiếm khí phá vỡ mọi block nó đi qua — kể cả công trình và cả block không thể phá như bedrock — và các block vỡ ra rơi thành vật phẩm.
-- Đạo kiếm khí không còn hồi chiêu: vung bao nhiêu lần cũng được, mỗi lần vung phóng ra một đạo kiếm khí mới.
+- Giáp Bất Tử đủ bộ thêm hiệu ứng: Hồi máu II, Chống lửa, Sức mạnh II, Kháng cự II, Thở dưới nước, Nhìn trong bóng tối, May mắn II, Tốc độ II, Nhảy cao II, Đào nhanh II, và tăng thêm 3 thanh máu (30 trái tim).
 - Ngoại hình kiếm và giáp đổi sang phong cách thần thánh: vàng rực với lõi trắng, kiếm có chuôi cánh và đường rune thiên thể, mũ có vương miện, ngực có huy hiệu mặt trời; thay cho tông vũ trụ tím–cyan trước đây. Texture được tạo bằng `tools/make-textures.ps1` (Windows) hoặc `tools/make-textures.py`.
 - Kiếm Thực Tại gây sát thương vô hạn: bất cứ thực thể nào bị chém — kể cả boss và quái mod thêm vào — đều chết. Kết liễu thực tại không còn ngoại lệ nào (kể cả người chơi sáng tạo hay máy chủ tắt PvP), và thực thể nào kháng lại cái chết sẽ bị loại khỏi thế giới.
 - Lệnh xóa đồ không lấy được đồ Reality: /clear và /item bị hủy khi chúng chạm vào giáp Bất Tử hoặc Kiếm Thực Tại mà người chơi đang mang, kể cả đồ dự phòng trong túi.

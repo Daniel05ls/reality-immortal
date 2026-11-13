@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -16,8 +17,14 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.Unbreakable;
@@ -50,6 +57,9 @@ public final class RealityImmortal {
     public static final DeferredItem<ArmorItem> CHEST = armor("immortal_chestplate", ArmorItem.Type.CHESTPLATE);
     public static final DeferredItem<ArmorItem> LEGS = armor("immortal_leggings", ArmorItem.Type.LEGGINGS);
     public static final DeferredItem<ArmorItem> BOOTS = armor("immortal_boots", ArmorItem.Type.BOOTS);
+    // +60 max health: three extra health bars (30 hearts) while the full
+    // Immortal set is worn.
+    private static final ResourceLocation EXTRA_HEALTH_ID = ResourceLocation.fromNamespaceAndPath(ID, "immortal_health");
 
     public RealityImmortal(IEventBus bus) {
         MATERIALS.register(bus);
@@ -222,17 +232,42 @@ public final class RealityImmortal {
     }
 
     private static void tick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer p) || !p.isAlive() || !fullSet(p)) return;
+        if (!(event.getEntity() instanceof ServerPlayer p) || !p.isAlive()) return;
+        AttributeInstance health = p.getAttribute(Attributes.MAX_HEALTH);
+        if (!fullSet(p)) {
+            // Set incomplete: the bonus health goes away again.
+            if (health != null) health.removeModifier(EXTRA_HEALTH_ID);
+            return;
+        }
+        if (health != null && !health.hasModifier(EXTRA_HEALTH_ID)) {
+            health.addTransientModifier(new AttributeModifier(EXTRA_HEALTH_ID, 60.0,
+                AttributeModifier.Operation.ADD_VALUE));
+        }
         p.setHealth(p.getMaxHealth());
         p.clearFire();
         p.setAirSupply(p.getMaxAirSupply());
         p.setTicksFrozen(0);
-        p.fallDistance = 0;
+        // NOTE: fall distance is deliberately NOT zeroed here. Fall damage
+        // is already cancelled by protect(), and zeroing it every tick
+        // would make critical hits impossible, so the Reality Sword could
+        // never release its sword-qi blade while the full set is worn.
         if (p.tickCount % 20 == 0) {
             p.getFoodData().eat(20, 1.0F);
             for (var effect : List.copyOf(p.getActiveEffects())) {
                 if (!effect.getEffect().value().isBeneficial()) p.removeEffect(effect.getEffect());
             }
+            // Full-set blessings, refreshed every second so they never run
+            // out while the set is worn.
+            bless(p, MobEffects.REGENERATION, 1);
+            bless(p, MobEffects.FIRE_RESISTANCE, 0);
+            bless(p, MobEffects.STRENGTH, 1);
+            bless(p, MobEffects.RESISTANCE, 1);
+            bless(p, MobEffects.WATER_BREATHING, 0);
+            bless(p, MobEffects.NIGHT_VISION, 0);
+            bless(p, MobEffects.LUCK, 1);
+            bless(p, MobEffects.SPEED, 1);
+            bless(p, MobEffects.JUMP_BOOST, 1);
+            bless(p, MobEffects.HASTE, 1);
         }
         // Recover above the same column when falling below the world.
         if (p.getY() < p.level().getMinBuildHeight() - 32) {
@@ -243,5 +278,9 @@ public final class RealityImmortal {
             p.setDeltaMovement(0, 0, 0);
             p.fallDistance = 0;
         }
+    }
+
+    private static void bless(ServerPlayer p, Holder<MobEffect> effect, int amplifier) {
+        p.addEffect(new MobEffectInstance(effect, 100, amplifier, false, false, true));
     }
 }
