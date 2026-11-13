@@ -122,41 +122,34 @@ public final class RealityCombat {
         }
     }
 
+    private static final DustParticleOptions CYAN_EDGE = new DustParticleOptions(new Vector3f(0.08F,0.88F,1F),0.7F);
+    private static final DustParticleOptions ICE_CORE = new DustParticleOptions(new Vector3f(0.87F,1F,1F),0.46F);
+    private static final DustParticleOptions BLUE_TRAIL = new DustParticleOptions(new Vector3f(0.06F,0.38F,0.7F),0.9F);
+
     public static void swordQi(ServerLevel level, Vec3 center, Vec3 look, double scale) {
-        // Three crescents nested into a slightly curved X: two large
-        // crescents cross as the strokes of the X, curving toward each
-        // other, and a smaller crescent sits nested at the crossing,
-        // curving the other way. Bright white core, golden glowing edges.
-        Basis basis = bladeBasis(look);
-        Vec3 u = basis.u();
-        Vec3 v = basis.v();
-        Vec3 d1 = u.add(v).normalize();      // bottom-left -> top-right
-        Vec3 d2 = u.subtract(v).normalize(); // top-left -> bottom-right
-        crescent(level, center, d1, d2.scale(-1), 6.0 * scale, 0.8 * scale);
-        crescent(level, center, d2, d1, 6.0 * scale, 0.8 * scale);
-        crescent(level, center, d1, d2, 2.6 * scale, 0.4 * scale);
+        Basis basis=bladeBasis(look);
+        Vec3 diagonal=basis.u().scale(0.8660254).subtract(basis.v().scale(0.5));
+        Vec3 normal=basis.u().scale(0.5).add(basis.v().scale(0.8660254));
+        Vec3 forward=look.normalize();
+        ribbon(level,center,diagonal,normal,forward,3.0*scale,1.3*scale,scale,28);
+        ribbon(level,center.subtract(normal.scale(0.8*scale)).subtract(forward.scale(0.25)),
+            diagonal,normal,forward,2.34*scale,0.9*scale,scale*0.7,20);
     }
 
-    private static void crescent(ServerLevel level, Vec3 center, Vec3 dir, Vec3 bulgeDir, double length, double bulge) {
-        // One crescent stroke: a curved arc, thick in the middle and pointed
-        // at both ends, with a bright white core and golden edges. The
-        // thickness scales with the stroke's length.
-        for (int i = 0; i <= 14; i++) {
-            double t = i / 7.0 - 1.0; // -1 .. 1 along the stroke
-            Vec3 p = center.add(dir.scale(t * length / 2)).add(bulgeDir.scale(bulge * (1 - t * t)));
-            level.sendParticles(WHITE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-            double half = length * 0.047 * (1 - t * t);
-            if (half > 0.05) {
-                Vec3 edgeUp = p.add(bulgeDir.scale(half));
-                Vec3 edgeDown = p.add(bulgeDir.scale(-half));
-                level.sendParticles(GOLD, edgeUp.x, edgeUp.y, edgeUp.z, 1, 0, 0, 0, 0);
-                level.sendParticles(GOLD, edgeDown.x, edgeDown.y, edgeDown.z, 1, 0, 0, 0, 0);
-            }
-            if (Math.abs(t) <= 0.3) {
-                Vec3 coreUp = p.add(bulgeDir.scale(length * 0.023));
-                Vec3 coreDown = p.add(bulgeDir.scale(-length * 0.023));
-                level.sendParticles(LIGHT_GOLD, coreUp.x, coreUp.y, coreUp.z, 1, 0, 0, 0, 0);
-                level.sendParticles(LIGHT_GOLD, coreDown.x, coreDown.y, coreDown.z, 1, 0, 0, 0, 0);
+    private static void ribbon(ServerLevel level,Vec3 center,Vec3 axis,Vec3 normal,Vec3 forward,
+                               double halfLength,double bulge,double scale,int segments) {
+        for(int i=0;i<=segments;i++) {
+            double t=2.0*i/segments-1.0;
+            double taper=Math.pow(Math.max(0,1-t*t),0.75);
+            Vec3 edge=center.add(axis.scale(t*halfLength)).add(normal.scale(bulge*(1-t*t)));
+            // Narrow white cutting edge; thicker cyan body tapers to two sharp tips.
+            level.sendParticles(ICE_CORE,edge.x,edge.y,edge.z,1,0,0,0,0);
+            if(taper<0.08) continue;
+            Vec3 body=edge.subtract(normal.scale(0.18*scale*taper));
+            level.sendParticles(CYAN_EDGE,body.x,body.y,body.z,1,0,0,0,0);
+            if(i%2==0) {
+                Vec3 wake=edge.subtract(normal.scale(0.5*scale*taper)).subtract(forward.scale(0.45*scale));
+                level.sendParticles(BLUE_TRAIL,wake.x,wake.y,wake.z,1,0.02,0.02,0.02,0);
             }
         }
     }
@@ -203,10 +196,12 @@ public final class RealityCombat {
             if (along < 0 || along > 1) continue;
             Vec3 closest = from.add(travel.scale(along));
             Vec3 off = c.subtract(closest);
-            double s1 = (off.dot(basis.u()) + off.dot(basis.v())) / Math.sqrt(2);
-            double p1 = (off.dot(basis.u()) - off.dot(basis.v())) / Math.sqrt(2);
-            boolean onStroke1 = Math.abs(s1) <= 3.0 * scale && Math.abs(p1) <= 1.0 * scale;
-            boolean onStroke2 = Math.abs(p1) <= 3.0 * scale && Math.abs(s1) <= 1.0 * scale;
+            double s1 = off.dot(basis.u()) * 0.8660254 - off.dot(basis.v()) * 0.5;
+            double p1 = off.dot(basis.u()) * 0.5 + off.dot(basis.v()) * 0.8660254;
+            double t1=s1/(3.0*scale);
+            boolean onStroke1 = Math.abs(t1)<=1 && Math.abs(p1-1.3*scale*(1-t1*t1))<=0.7*scale;
+            double t2=s1/(2.34*scale);
+            boolean onStroke2 = Math.abs(t2)<=1 && Math.abs(p1+0.8*scale-0.9*scale*(1-t2*t2))<=0.55*scale;
             if (!onStroke1 && !onStroke2) continue;
             if (state.getDestroySpeed(level, p) < 0) {
                 Item item = state.getBlock().asItem();

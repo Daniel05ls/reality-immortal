@@ -29,7 +29,7 @@ public final class CrescentSlash {
     private static final double RANGE = 50;       // blocks
     private static final double SCALE = 5.0 / 3.0; // wide charged blade (10-block strokes)
     private static final int MAX_ACTIVE = 32;
-    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(1F, 0.79F, 0.24F), 1.0F);
+    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(0.08F, 0.8F, 1F), 1.0F);
     private static final Map<ServerLevel, List<Slash>> ACTIVE = new WeakHashMap<>();
     private record Slash(ServerPlayer player, Vec3 start, Vec3 pos, Vec3 dir) {}
     private CrescentSlash() {}
