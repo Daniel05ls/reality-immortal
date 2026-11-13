@@ -72,6 +72,7 @@ public final class RealityImmortal {
     public RealityImmortal(IEventBus bus) {
         MATERIALS.register(bus);
         ITEMS.register(bus);
+        NeoForge.EVENT_BUS.addListener(AngelFlight::commands);
         TABS.register(bus);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::denyDeath);
