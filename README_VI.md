@@ -1,6 +1,10 @@
-# Kiếm Thực Tại & Giáp Bất Tử — 1.1.0
+# Kiếm Thực Tại & Giáp Bất Tử — 1.1.1
 
 Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
+
+## Bản 1.1.1
+- Đủ 4 món giáp kháng cả lệnh gây chết: /kill và /damage đều không có tác dụng (trước đây /kill của quản trị viên vẫn có hiệu lực).
+- Kiếm Thực Tại vẫn vượt bảo vệ của Giáp Bất Tử khi PvP được phép.
 
 ## Bản 1.1.0
 - 5 texture vật phẩm mới: tím vũ trụ, lưỡi/viền cyan, điểm vàng.
@@ -29,8 +33,8 @@ Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
 ## Cài đặt
 1. Trong GitHub Actions, mở lần build màu xanh mới nhất và tải artifact.
-2. Giải nén để lấy `reality-immortal-1.1.0.jar`.
-3. Đóng game, chuyển JAR bản 1.0.0 ra khỏi `mods`, chép bản 1.1.0 vào.
+2. Giải nén để lấy `reality-immortal-1.1.1.jar`.
+3. Đóng game, chuyển JAR bản 1.1.0 ra khỏi `mods`, chép bản 1.1.1 vào.
 4. Mở Minecraft 1.21.1 với NeoForge 21.1.262+. Server và client cần cùng phiên bản mod.
 5. Thử trong một thế giới mới trước khi dùng thế giới chính.
 
