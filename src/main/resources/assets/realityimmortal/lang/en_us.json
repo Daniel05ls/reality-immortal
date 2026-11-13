@@ -3,5 +3,10 @@
   "item.realityimmortal.immortal_helmet": "Immortal Helmet",
   "item.realityimmortal.immortal_chestplate": "Immortal Chestplate",
   "item.realityimmortal.immortal_leggings": "Immortal Leggings",
-  "item.realityimmortal.immortal_boots": "Immortal Boots"
+  "item.realityimmortal.immortal_boots": "Immortal Boots",
+  "tooltip.realityimmortal.infinity": "∞ Reality execution • Bypasses armor and immunity",
+  "tooltip.realityimmortal.rift": "Right-click: Space Rift • 32 blocks • 3s cooldown",
+  "tooltip.realityimmortal.enchantable": "Enchantable at the enchanting table and anvil",
+  "tooltip.realityimmortal.armor": "Full set: activate immortal protection",
+  "death.attack.reality_cut": "%1$s was severed from reality by %2$s"
 }

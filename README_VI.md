@@ -1,54 +1,42 @@
-# Ki?m Th?c T?i & Gi�p B?t T?
+# Kiếm Thực Tại & Giáp Bất Tử — 1.1.0
 
-Ma ngu?n mod Minecraft Java Edition **1.21.1**, **NeoForge 21.1.262**,
-Java **21**. Kh�ng d�ng v?i Forge, Fabric ho?c Bedrock.
+Minecraft Java 1.21.1 • NeoForge 21.1.262 hoặc mới hơn trong nhánh 21.1.
 
-## T�nh nang
+## Bản 1.1.0
+- 5 texture vật phẩm mới: tím vũ trụ, lưỡi/viền cyan, điểm vàng.
+- Lưỡi kiếm có 4 khung hoạt ảnh; giáp mặc trên người dùng 2 lớp texture riêng.
+- Kiếm và cả 4 món giáp có thể phù phép ở bàn phù phép, đe và bằng lệnh.
+- Đánh thường: cơ chế kết liễu thực tại, xuyên giáp/khiên/kháng sát thương thông thường.
+- Chuột phải: xé không gian theo hướng nhìn, dài 32 khối, bề rộng trúng đòn khoảng 2,5 khối,
+  xuyên tường; vết nứt cyan–tím tồn tại 1,2 giây, âm thanh sonic boom, hồi 3 giây.
+- Kỹ năng gây sát thương một lần khi tung chiêu. Vết nứt tồn tại sau đó là hiệu ứng hình ảnh.
+- Không phá khối, không tạo cổng dịch chuyển hoặc đổi chiều không gian.
 
-- Ki?m Th?c T?i: ch? s? s�t thuong co b?n 1.000 (500 tim) khi d�n d�nh h?i d?y.
-  S�t thuong th?c t? v?n ch?u co ch? gi�p, mi?n nhi?m v� c�c mod kh�c.
-- Chu?t ph?i: g�y 1.000 s�t thuong l�n qu�i th� d?ch trong b�n k�nh 8 kh?i,
-  ph?i nh�n th?y m?c ti�u; h?i chi�u 5 gi�y. Kh�ng d�nh ngu?i choi ho?c th� nu�i.
-  D�nh thu?ng v?n tu�n theo lu?t PvP c?a m�y ch?.
-- 4 m�n Gi�p B?t T?: mu, �o, qu?n, gi�y. Ch? khi m?c **d? 4 m�n** m?i b?t b?o v?.
-- D? b?: h?y s�t thuong qua s? ki?n NeoForge, d?y m�u m?i tick, d?p l?a,
-  h?i oxy, ch?ng d�ng bang, h?i th?c an v� x�a hi?u ?ng x?u m?i gi�y.
-- Roi du?i d�y th? gi?i: dua l�n tr�n b? m?t c�ng c?t t?a d?.
-  ? v�ng ho�n to�n tr?ng nhu r�a End, c� th? ti?p t?c roi; hay di chuy?n v? d?t.
-- Ki?m v� gi�p kh�ng m?t d? b?n, kh�ng ch�y khi roi th�nh v?t ph?m.
-- D�ng h�nh ?nh netherite c� �nh ph� ph�p; chua c� texture ri�ng.
-- C�c v?t ph?m n?m trong tab Creative Combat v� c� t�n ti?ng Vi?t/ti?ng Anh.
+## Lưu ý khi chơi
+- Kiếm chém cả quái, động vật, thú nuôi và các thực thể có thể đánh được.
+- Kỹ năng có thể phá thuyền, xe mỏ, khung tranh hoặc giá giáp nằm trên đường chém.
+- PvP tuân theo cấu hình máy chủ và luật đồng đội; không kết liễu người chơi Creative/Spectator.
+- Kiếm có thể vượt bảo vệ của chính bộ Giáp Bất Tử khi PvP được phép.
+- Đủ 4 món giáp: hủy sát thương thường, hồi đầy máu, oxy, thức ăn, dập lửa, xóa hiệu ứng xấu.
+- /kill của quản trị viên vẫn có hiệu lực. Tháo một món là mất bảo vệ đủ bộ.
+- Không gán giá trị Infinity/NaN cho thuộc tính: tooltip ∞ mô tả cơ chế kết liễu.
+  Chỉ số thuộc tính nền vẫn là 1.000; đòn kết liễu dùng sát thương cực lớn, rồi đưa máu về 0
+  nếu còn sống. Mob vẫn sống sau các bước này sẽ bị loại bỏ (trừ rồng và người chơi để giữ
+  quy trình chết/respawn). Trường hợp loại bỏ trực tiếp có thể không rơi đồ/XP.
+- Không thể bảo đảm tương thích tuyệt đối với mod ghi đè chết, hồi sinh hoặc tạo lại thực thể.
+- Enchantment có thể áp dụng theo nhóm kiếm/giáp thông thường; các hiệu ứng như Sharpness,
+  Protection, Unbreaking hầu như không cần thiết với khả năng đặc biệt sẵn có của bộ này.
 
-Kh�ng cam k?t th?ng m?i mod: /kill c?a qu?n tr? vi�n v?n c� t�c d?ng.
-Mod kh�c x�a th?c th?, d?t m�u tr?c ti?p ho?c can thi?p s? ki?n c� th? vu?t b?o v?.
-Kh�ng c?p quy?n bay ho?c thay d?i ch? d? choi. Th�o b?t k? m�n n�o l� m?t b?o v?.
+## Cài đặt
+1. Trong GitHub Actions, mở lần build màu xanh mới nhất và tải artifact.
+2. Giải nén để lấy `reality-immortal-1.1.0.jar`.
+3. Đóng game, chuyển JAR bản 1.0.0 ra khỏi `mods`, chép bản 1.1.0 vào.
+4. Mở Minecraft 1.21.1 với NeoForge 21.1.262+. Server và client cần cùng phiên bản mod.
+5. Thử trong một thế giới mới trước khi dùng thế giới chính.
 
-## Build tr�n Windows
+Các mã vật phẩm không đổi, vật phẩm đang có trong thế giới vẫn sử dụng được.
 
-1. C�i **JDK 21** t? https://adoptium.net/temurin/releases/?version=21 .
-2. D?t `JAVA_HOME` v? thu m?c JDK 21 (kh�ng ph?i thu m?c `bin`), m? PowerShell m?i.
-3. Gi?i n�n g�i ngu?n, m? PowerShell trong thu m?c ch?a `build-mod.ps1`.
-4. Ch?y:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\build-mod.ps1
-```
-
-Script t?i Gradle 8.14.3 t? nh� ph�t h�nh, ki?m tra SHA-256 r?i ch?y build.
-C?n Internet d? t?i Gradle, NeoForge v� thu vi?n. Kh�ng d?i ch�nh s�ch h? th?ng.
-N?u da c� Gradle 8.14.3 + JDK 21, c� th? d�ng `gradle build` tr?c ti?p.
-
-K?t qu? d? ki?n: `build/libs/reality-immortal-1.0.0.jar`.
-Ch�p JAR v�o thu m?c `mods` c?a d�ng profile Minecraft 1.21.1 NeoForge.
-N?u choi m�y ch?, c�i c�ng phi�n b?n mod ? c? m�y ch? v� c�c m�y ngu?i choi.
-Kh�ng ch�p ZIP ma ngu?n v�o `mods`.
-
-Ch?y m�i tru?ng th? nghi?m: `powershell -ExecutionPolicy Bypass -File .\build-mod.ps1 -Task runClient`.
-
-## L?y v?t ph?m b?ng l?nh
-
-B?t cheats ho?c c� quy?n OP:
-
+## Lệnh
 ```mcfunction
 /give @s realityimmortal:reality_sword
 /give @s realityimmortal:immortal_helmet
@@ -57,41 +45,21 @@ B?t cheats ho?c c� quy?n OP:
 /give @s realityimmortal:immortal_boots
 ```
 
-## C�ng th?c (b�n ch? t?o)
+## Chế tạo
+Kiếm: sao địa ngục, thỏi netherite, gậy blaze xếp dọc từ trên xuống.
+Mỗi món giáp: món giáp netherite tương ứng + sao địa ngục + táo vàng phù phép (không định hình).
+Công thức tạo vật phẩm mới, không giữ enchant hoặc tên của nguyên liệu.
 
-Ki?m: S = sao d?a ng?c; N = th?i netherite; B = g?y blaze.
+## Build
+GitHub Actions tự dùng Temurin JDK 21 và Gradle 8.14.3 để kiểm tra tài nguyên và build JAR.
+Trên Windows đã có JDK 21 và JAVA_HOME: chạy `powershell -ExecutionPolicy Bypass -File .\build-mod.ps1`.
+Không cần Java trên máy cá nhân nếu chỉ dùng Actions để build.
 
-| | | |
-|---|---|---|
-| Tr?ng | S | Tr?ng |
-| Tr?ng | N | Tr?ng |
-| Tr?ng | B | Tr?ng |
+## Kiểm thử
+CI kiểm tra JSON, liên kết model/texture, kích thước PNG/hoạt ảnh, các tag phù phép/sát thương
+và biên dịch mã Java. Chưa kiểm thử trong game: ngoại hình khi mặc, enchant ở bàn/đe,
+rồng/Wither/Warden, hoạt động trên server riêng và tương thích mob của các mod khác.
 
-M?i m�n gi�p: gh�p kh�ng d?nh h�nh **m�n gi�p netherite tuong ?ng + 1 sao d?a ng?c
-+ 1 t�o v�ng ph� ph�p**. K?t qu? l� m�n m?i, kh�ng gi? t�n/ph� ph�p c?a nguy�n li?u.
+Texture được tạo bằng `tools/make-textures.ps1`; kiểm tra bằng `python3 tools/verify_resources.py`.
 
-## Ki?m tra v� gi?i h?n b?n b�n giao
-
-Da ki?m tra JSON, t�n t�i nguy�n, ma v?t ph?m v� c� ph�p PowerShell b?ng c�ng c?.
-**Chua bi�n d?ch ho?c ch?y Minecraft**: m�i tru?ng t?o ma ch? c� Java 8 v� kh�ng
-truy c?p du?c m�y ch? t?i c�ng c?. D�y l� ma ngu?n, chua ph?i JAR du?c ki?m th?.
-
-Tru?c khi d�ng v?i th? gi?i ch�nh, build v� ki?m tra tr�n m?t th? gi?i m?i:
-
-1. M? game; ki?m tra 5 v?t ph?m, t�n, h�nh ?nh v� t?t c? c�ng th?c.
-2. D�nh qu�i b?ng ki?m; chu?t ph?i g?n qu�i, th� nu�i v� ngu?i choi; ki?m tra h?i chi�u.
-3. M?c d? b?, th? dung nham, roi cao, ng?t nu?c, d?c v� void.
-4. Th�o m?t m�n, ki?m tra s�t thuong ho?t d?ng l?i; ki?m tra /kill v?n ho?t d?ng.
-5. Th? server NeoForge ri�ng d? ki?m tra d?ng b? v� tuong th�ch c�c mod dang d�ng.
-
-## Ch?nh code
-
-- `RealitySword.java`: s�t thuong, b�n k�nh, h?i chi�u.
-- `RealityImmortal.java`: dang ky v?t ph?m v� co ch? gi�p.
-- `src/main/resources/data/realityimmortal/recipe`: c�ng th?c 1.21.1.
-- `src/main/resources/assets/realityimmortal`: t�n v� m� h�nh v?t ph?m.
-
-Tham chi?u API v� c?u h�nh:
-- https://docs.neoforged.net/docs/1.21.1/items/tools/
-- https://docs.neoforged.net/docs/1.21.1/concepts/events/
-- https://github.com/NeoForgeMDKs/MDK-1.21.1-ModDevGradle
+Tham chiếu: https://docs.neoforged.net/docs/1.21.1/items/tools/

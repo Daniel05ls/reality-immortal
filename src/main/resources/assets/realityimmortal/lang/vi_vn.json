@@ -1,7 +1,12 @@
 {
-  "item.realityimmortal.reality_sword": "Ki?m Th?c T?i",
-  "item.realityimmortal.immortal_helmet": "Mu B?t T?",
-  "item.realityimmortal.immortal_chestplate": "Ao Gi�p B?t T?",
-  "item.realityimmortal.immortal_leggings": "Qu?n Gi�p B?t T?",
-  "item.realityimmortal.immortal_boots": "?ng B?t T?"
+  "item.realityimmortal.reality_sword": "Kiếm Thực Tại",
+  "item.realityimmortal.immortal_helmet": "Mũ Bất Tử",
+  "item.realityimmortal.immortal_chestplate": "Áo Giáp Bất Tử",
+  "item.realityimmortal.immortal_leggings": "Quần Giáp Bất Tử",
+  "item.realityimmortal.immortal_boots": "Ủng Bất Tử",
+  "tooltip.realityimmortal.infinity": "∞ Kết liễu thực tại • Xuyên giáp và miễn nhiễm",
+  "tooltip.realityimmortal.rift": "Chuột phải: Xé không gian • 32 khối • Hồi 3 giây",
+  "tooltip.realityimmortal.enchantable": "Có thể phù phép tại bàn phù phép và đe",
+  "tooltip.realityimmortal.armor": "Mặc đủ 4 món: Kích hoạt bảo hộ bất tử",
+  "death.attack.reality_cut": "%1$s bị %2$s chém khỏi thực tại"
 }

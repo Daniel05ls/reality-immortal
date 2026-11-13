@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "realityimmortal:immortal_helmet",
+    "realityimmortal:immortal_chestplate",
+    "realityimmortal:immortal_leggings",
+    "realityimmortal:immortal_boots"
+  ]
+}

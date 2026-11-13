@@ -22,4 +22,4 @@ if (-not (Test-Path -LiteralPath $gradle)) {
 }
 & $gradle --no-daemon $Task
 if ($LASTEXITCODE -ne 0) { throw "Gradle failed with exit code $LASTEXITCODE" }
-if ($Task -eq 'build') { Write-Host 'Output: build\libs\reality-immortal-1.0.0.jar' }
+if ($Task -eq 'build') { Write-Host 'Output: build\libs\reality-immortal-1.1.0.jar' }

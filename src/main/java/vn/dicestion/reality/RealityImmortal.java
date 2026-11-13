@@ -1,6 +1,12 @@
 package vn.dicestion.reality;
 
 import java.util.List;
+import java.util.Map;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +28,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class RealityImmortal {
     public static final String ID = "realityimmortal";
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    public static final DeferredRegister<ArmorMaterial> MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, ID);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> IMMORTAL = MATERIALS.register("immortal", () ->
+        new ArmorMaterial(Map.of(ArmorItem.Type.HELMET, 5, ArmorItem.Type.CHESTPLATE, 10,
+            ArmorItem.Type.LEGGINGS, 8, ArmorItem.Type.BOOTS, 5, ArmorItem.Type.BODY, 10),
+            30, SoundEvents.ARMOR_EQUIP_NETHERITE, () -> Ingredient.of(Items.NETHER_STAR),
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(ID, "immortal"))),
+            5.0F, 0.25F));
     public static final DeferredItem<RealitySword> SWORD = ITEMS.register("reality_sword", RealitySword::new);
     public static final DeferredItem<ArmorItem> HELMET = armor("immortal_helmet", ArmorItem.Type.HELMET);
     public static final DeferredItem<ArmorItem> CHEST = armor("immortal_chestplate", ArmorItem.Type.CHESTPLATE);
@@ -29,10 +42,14 @@ public final class RealityImmortal {
     public static final DeferredItem<ArmorItem> BOOTS = armor("immortal_boots", ArmorItem.Type.BOOTS);
 
     public RealityImmortal(IEventBus bus) {
+        MATERIALS.register(bus);
         ITEMS.register(bus);
         bus.addListener(RealityImmortal::creativeTab);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::protect);
         NeoForge.EVENT_BUS.addListener(RealityImmortal::tick);
+        NeoForge.EVENT_BUS.addListener(RealityCombat::onAttack);
+        NeoForge.EVENT_BUS.addListener(SpaceRift::tick);
+        NeoForge.EVENT_BUS.addListener(SpaceRift::stop);
     }
 
     public static Item.Properties properties() {
@@ -42,8 +59,7 @@ public final class RealityImmortal {
     }
 
     private static DeferredItem<ArmorItem> armor(String name, ArmorItem.Type type) {
-        // Reuse vanilla netherite material and textures for resource-pack compatibility.
-        return ITEMS.register(name, () -> new ArmorItem(ArmorMaterials.NETHERITE, type,
+        return ITEMS.register(name, () -> new ImmortalArmor(IMMORTAL, type,
             properties().durability(type.getDurability(37))));
     }
 
@@ -67,7 +83,8 @@ public final class RealityImmortal {
     private static void protect(LivingIncomingDamageEvent event) {
         // Respect administrative /kill. Do not mutate creative/invulnerable abilities.
         if (event.getEntity() instanceof ServerPlayer p && fullSet(p)
-                && !event.getSource().is(DamageTypes.GENERIC_KILL)) {
+                && !event.getSource().is(DamageTypes.GENERIC_KILL)
+                && !event.getSource().is(RealityCombat.REALITY_CUT)) {
             event.setCanceled(true);
         }
     }
