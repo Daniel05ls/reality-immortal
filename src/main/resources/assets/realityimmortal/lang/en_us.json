@@ -9,5 +9,5 @@
   "tooltip.realityimmortal.enchantable": "Enchantable at the enchanting table and anvil",
   "tooltip.realityimmortal.armor": "Full set: activate immortal protection",
   "death.attack.reality_cut": "%1$s was severed from reality by %2$s",
-  "tooltip.realityimmortal.flight": "Dual flight: /canh angel or /canh elytra • /canh to toggle"
+  "tooltip.realityimmortal.flight": "Sneak + Swap Hands (default Shift + F) to switch flight mode"
 }

@@ -8,14 +8,12 @@ public final class AngelFlight {
     private static final String PREVIOUS = "realityimmortal:previous_mayfly";
     private static final String ELYTRA = "realityimmortal:elytra_mode";
     private AngelFlight() {}
-    public static void commands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
-        event.getDispatcher().register(net.minecraft.commands.Commands.literal("canh")
-            .executes(c -> switchMode(c.getSource().getPlayerOrException(),
-                !c.getSource().getPlayerOrException().getPersistentData().getBoolean(ELYTRA)))
-            .then(net.minecraft.commands.Commands.literal("elytra")
-                .executes(c -> switchMode(c.getSource().getPlayerOrException(),true)))
-            .then(net.minecraft.commands.Commands.literal("angel")
-                .executes(c -> switchMode(c.getSource().getPlayerOrException(),false))));
+    public static void swap(net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent.Hands event) {
+        if (!(event.getEntity() instanceof ServerPlayer p) || !p.isShiftKeyDown()
+            || !p.isAlive() || p.isSpectator()
+            || !p.getItemBySlot(EquipmentSlot.CHEST).is(RealityImmortal.CHEST.get())) return;
+        event.setCanceled(true);
+        switchMode(p,!p.getPersistentData().getBoolean(ELYTRA));
     }
     private static int switchMode(ServerPlayer p, boolean elytra) {
         if (!p.getItemBySlot(EquipmentSlot.CHEST).is(RealityImmortal.CHEST.get())) {
