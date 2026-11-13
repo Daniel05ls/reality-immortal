@@ -5,6 +5,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
 
 /** Layered, articulated geometry using the vanilla humanoid pose and armor slot masks. */
 public final class GodArmorModel extends HumanoidModel<LivingEntity> {
@@ -15,6 +16,13 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
     private static CubeListBuilder violet() { return CubeListBuilder.create().texOffs(96,32); }
     private static CubeListBuilder dark() { return CubeListBuilder.create().texOffs(64,64); }
 
+    public void animateWings(LivingEntity entity, EquipmentSlot slot, float partial) {
+        if (slot != EquipmentSlot.CHEST) return;
+        float flutter = (float)Math.sin((entity.tickCount + partial) * 0.07F) * 0.07F;
+        body.getChild("angel_left").yRot = 0.25F + flutter;
+        body.getChild("angel_right").yRot = -0.25F - flutter;
+    }
+
     public static LayerDefinition layer(boolean leggings, boolean boots) {
         MeshDefinition mesh = HumanoidModel.createMesh(new CubeDeformation(leggings ? 0.45F : 0.9F), 0);
         PartDefinition root = mesh.getRoot();
@@ -24,6 +32,26 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
         }
         PartDefinition head = root.getChild("head"), body = root.getChild("body");
         if (!leggings && !boots) {
+            // Feathered wings attach to the torso and inherit crouch/body motion.
+            for (int side : new int[]{-1,1}) {
+                PartDefinition wing = body.addOrReplaceChild(side < 0 ? "angel_left" : "angel_right",
+                    gold().addBox(-1,-1,-0.7F,2,3,1.4F),
+                    PartPose.offset(side*2.8F,2,3.8F));
+                for (int i=0;i<9;i++) {
+                    float reach = 2F + i*1.55F;
+                    float rise = -1.8F - (float)Math.sin(i/8F*Math.PI)*5F;
+                    float length = 5.5F + i*0.9F;
+                    wing.addOrReplaceChild("feather_"+i,
+                        ivory().addBox(-1.0F,0,-0.45F,2F,length,0.9F),
+                        PartPose.offsetAndRotation(side*reach,rise,0.3F+i*0.16F,0.08F,0,-side*(0.25F+i*0.065F)));
+                    wing.addOrReplaceChild("quill_"+i,
+                        gold().addBox(-0.17F,0,-0.65F,0.34F,length*0.8F,0.35F),
+                        PartPose.offsetAndRotation(side*reach,rise,0.3F+i*0.16F,0.08F,0,-side*(0.25F+i*0.065F)));
+                    wing.addOrReplaceChild("covert_"+i,
+                        ivory().addBox(-1.2F,0,-0.9F,2.4F,3.8F,1.0F),
+                        PartPose.offsetAndRotation(side*reach,rise-0.2F,-0.15F+i*0.16F,0,0,-side*0.25F));
+                }
+            }
             // Raised brow, crystal visor and five crown points.
             head.addOrReplaceChild("brow", gold().addBox(-4.5F,-8.5F,-5.15F,9,1.2F,1.1F), PartPose.ZERO);
             head.addOrReplaceChild("visor", crystal().addBox(-3.5F,-5.9F,-5.1F,7,0.8F,0.65F), PartPose.ZERO);

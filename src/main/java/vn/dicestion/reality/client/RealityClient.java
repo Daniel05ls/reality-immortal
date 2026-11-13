@@ -52,6 +52,7 @@ public final class RealityClient {
                     return boots;
                 }
                 if(outer==null) outer=new GodArmorModel(models.bakeLayer(OUTER));
+                outer.animateWings(entity,slot,Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
                 return outer;
             }
         },RealityImmortal.HELMET.get(),RealityImmortal.CHEST.get(),RealityImmortal.LEGS.get(),RealityImmortal.BOOTS.get());
