@@ -153,7 +153,9 @@ public final class RealityImmortal {
 
     private static List<Entity> itemTargets(CommandContext<CommandSourceStack> context) {
         try {
-            return EntityArgument.getEntities(context, "targets").stream().toList();
+            // getEntities returns Collection<? extends Entity>, which cannot be
+            // returned as List<Entity> directly, so each element is cast first.
+            return EntityArgument.getEntities(context, "targets").stream().map(Entity.class::cast).toList();
         } catch (IllegalArgumentException | CommandSyntaxException e) {
             // Block targets have no "targets" argument; a selector matching
             // nothing makes the command fail on its own either way.
