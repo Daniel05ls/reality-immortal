@@ -8,5 +8,6 @@
   "tooltip.realityimmortal.rift": "Chuột phải: Xé không gian • 32 khối • Hồi 3 giây",
   "tooltip.realityimmortal.enchantable": "Có thể phù phép tại bàn phù phép và đe",
   "tooltip.realityimmortal.armor": "Mặc đủ 4 món: Kích hoạt bảo hộ bất tử",
-  "death.attack.reality_cut": "%1$s bị %2$s chém khỏi thực tại"
+  "death.attack.reality_cut": "%1$s bị %2$s chém khỏi thực tại",
+  "tooltip.realityimmortal.flight": "Cánh thần: Bay lượn như Elytra • Dùng pháo hoa để tăng tốc"
 }

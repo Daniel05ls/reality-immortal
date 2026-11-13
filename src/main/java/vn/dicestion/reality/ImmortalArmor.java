@@ -1,6 +1,8 @@
 package vn.dicestion.reality;
 
 import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -11,10 +13,20 @@ public final class ImmortalArmor extends ArmorItem {
         super(material, type, properties);
     }
     @Override
+    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
+        return getType() == Type.CHESTPLATE
+            && entity.getItemBySlot(EquipmentSlot.CHEST) == stack;
+    }
+    @Override
+    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
+        return canElytraFly(stack, entity);
+    }
+    @Override
     public boolean isEnchantable(ItemStack stack) { return !stack.isEnchanted(); }
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
         super.appendHoverText(stack, context, lines, flag);
+        if (getType() == Type.CHESTPLATE) lines.add(Component.translatable("tooltip.realityimmortal.flight").withStyle(ChatFormatting.GOLD));
         lines.add(Component.translatable("tooltip.realityimmortal.armor").withStyle(ChatFormatting.LIGHT_PURPLE));
         lines.add(Component.translatable("tooltip.realityimmortal.enchantable").withStyle(ChatFormatting.AQUA));
     }

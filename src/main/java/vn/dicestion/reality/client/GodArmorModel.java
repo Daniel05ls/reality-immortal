@@ -18,9 +18,10 @@ public final class GodArmorModel extends HumanoidModel<LivingEntity> {
 
     public void animateWings(LivingEntity entity, EquipmentSlot slot, float partial) {
         if (slot != EquipmentSlot.CHEST) return;
+        float spread = entity.isFallFlying() ? 0.04F : 0.25F;
         float flutter = (float)Math.sin((entity.tickCount + partial) * 0.07F) * 0.07F;
-        body.getChild("angel_left").yRot = 0.25F + flutter;
-        body.getChild("angel_right").yRot = -0.25F - flutter;
+        body.getChild("angel_left").yRot = spread + flutter;
+        body.getChild("angel_right").yRot = -spread - flutter;
     }
 
     public static LayerDefinition layer(boolean leggings, boolean boots) {
